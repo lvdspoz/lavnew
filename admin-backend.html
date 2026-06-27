@@ -1,0 +1,2318 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAVISH Backend Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050505;
+  --panel: #111114;
+  --panel-2: #17171b;
+  --line: rgba(255,255,255,.12);
+  --text: rgba(255,255,255,.9);
+  --muted: rgba(255,255,255,.56);
+  --faint: rgba(255,255,255,.34);
+  --accent: #f2f2f2;
+  --danger: #ff7777;
+  --ok: #88d8a2;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at 50% -18%, rgba(120,18,34,.18), transparent 32%), var(--bg);
+  color: var(--text);
+  font-family: "DM Sans", Arial, sans-serif;
+}
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+a { color: inherit; }
+.hidden { display: none !important; }
+.brand {
+  font-family: "Cinzel", serif;
+  letter-spacing: .3em;
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+.sub {
+  color: var(--faint);
+  font-size: .66rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+.muted { color: var(--muted); font-size: .86rem; line-height: 1.5; }
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem clamp(1rem, 3vw, 2rem);
+  border-bottom: 1px solid var(--line);
+  background: rgba(0,0,0,.78);
+  backdrop-filter: blur(16px);
+}
+.actions { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; justify-content: flex-end; }
+.btn {
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.04);
+  color: var(--text);
+  padding: .68rem .86rem;
+  border-radius: 6px;
+  font-size: .7rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+.btn:hover { border-color: rgba(255,255,255,.36); background: rgba(255,255,255,.08); }
+.btn.primary { background: var(--accent); color: #050505; }
+.btn.danger { color: #ffd0d0; border-color: rgba(255,110,110,.28); }
+.btn.ok { color: #d5ffe0; border-color: rgba(136,216,162,.34); }
+.mini { padding: .48rem .58rem; font-size: .62rem; }
+.login {
+  width: min(430px, calc(100% - 2rem));
+  margin: 8vh auto;
+  padding: 1.4rem;
+  border: 1px solid var(--line);
+  background: rgba(15,15,18,.88);
+  border-radius: 8px;
+}
+.layout {
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  width: min(1500px, calc(100% - 2rem));
+  margin: 1.2rem auto 4rem;
+  gap: 1rem;
+}
+.tabs {
+  position: sticky;
+  top: 88px;
+  height: calc(100vh - 108px);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(12,12,14,.82);
+  padding: .6rem;
+  overflow: auto;
+}
+.tab {
+  display: block;
+  width: 100%;
+  margin-bottom: .35rem;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 6px;
+  padding: .74rem .72rem;
+  text-align: left;
+  font-size: .7rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.tab:hover, .tab.active {
+  border-color: rgba(255,255,255,.13);
+  background: rgba(255,255,255,.04);
+  color: var(--text);
+}
+.panel {
+  display: none;
+  border: 1px solid var(--line);
+  background: rgba(15,15,18,.78);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.panel.active { display: block; }
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+.panel-title {
+  margin: .25rem 0 0;
+  font-family: "Cinzel", serif;
+  letter-spacing: .12em;
+  font-size: 1.35rem;
+  font-weight: 500;
+}
+.panel-body { padding: 1rem; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+.grid-2 { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(300px, .8fr); gap: 1rem; }
+.field { margin-bottom: .95rem; }
+label {
+  display: block;
+  margin-bottom: .42rem;
+  color: var(--faint);
+  font-size: .66rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+input, textarea, select {
+  width: 100%;
+  border: 1px solid rgba(255,255,255,.13);
+  background: rgba(0,0,0,.38);
+  color: var(--text);
+  border-radius: 6px;
+  padding: .72rem .78rem;
+  outline: none;
+}
+textarea { min-height: 92px; resize: vertical; }
+input[type="checkbox"] { width: auto; transform: translateY(1px); }
+input[type="color"] { height: 42px; padding: .25rem; }
+input:focus, textarea:focus, select:focus { border-color: rgba(255,255,255,.36); }
+.section-divider {
+  margin: 1.35rem 0 .9rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255,255,255,.08);
+  color: var(--faint);
+  font-size: .68rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+.product-tools {
+  display: grid;
+  grid-template-columns: 1fr 190px 160px;
+  gap: .7rem;
+  margin-bottom: 1rem;
+}
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+.card, .editor-card, .preview-pane, .metric {
+  border: 1px solid rgba(255,255,255,.1);
+  background: var(--panel-2);
+  border-radius: 8px;
+}
+.card { overflow: hidden; }
+.preview {
+  height: 205px;
+  display: grid;
+  place-items: center;
+  background: #070707;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  color: rgba(255,255,255,.42);
+  font-family: "Cinzel", serif;
+  font-size: 2.6rem;
+}
+.preview img { width: 100%; height: 100%; object-fit: contain; padding: .7rem; }
+.card-body { padding: .95rem; }
+.card-top { display: flex; justify-content: space-between; gap: .8rem; align-items: start; }
+.card h3 { margin: 0; font-size: 1rem; line-height: 1.25; }
+.price { font-weight: 700; color: #fff; white-space: nowrap; }
+.desc { min-height: 38px; color: var(--muted); font-size: .84rem; line-height: 1.45; }
+.badge-row { display: flex; flex-wrap: wrap; gap: .35rem; margin: .7rem 0; }
+.badge {
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 999px;
+  padding: .25rem .5rem;
+  color: var(--muted);
+  font-size: .68rem;
+}
+.badge.off { color: #ffd0d0; border-color: rgba(255,110,110,.24); }
+.badge.ok { color: #d5ffe0; border-color: rgba(136,216,162,.26); }
+.editor-card { padding: .9rem; margin-bottom: .75rem; }
+.editor-head {
+  display: flex;
+  justify-content: space-between;
+  gap: .8rem;
+  align-items: center;
+  margin-bottom: .8rem;
+}
+.preview-pane { padding: 1rem; align-self: start; position: sticky; top: 88px; }
+.preview-title { color: var(--faint); font-size: .66rem; letter-spacing: .18em; text-transform: uppercase; margin-bottom: .8rem; }
+.hero-preview {
+  min-height: 240px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  border-radius: 8px;
+  background: radial-gradient(circle at top, rgba(120,18,34,.25), transparent 48%), #050505;
+  border: 1px solid rgba(255,255,255,.08);
+  padding: 1rem;
+}
+.hero-preview h3 {
+  margin: .35rem 0;
+  font-family: "Cinzel", serif;
+  letter-spacing: .2em;
+  font-size: 2rem;
+  transform: translateX(.1em);
+}
+.pill-row { display: flex; flex-wrap: wrap; gap: .45rem; }
+.pill {
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.25);
+  color: var(--muted);
+  border-radius: 999px;
+  padding: .35rem .58rem;
+  font-size: .68rem;
+}
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+.metric { padding: 1rem; }
+.metric strong { display: block; font-size: 1.8rem; margin-top: .3rem; }
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0,0,0,.72);
+}
+.modal.open { display: flex; }
+.modal-card {
+  width: min(900px, 100%);
+  max-height: 92vh;
+  overflow: auto;
+  border: 1px solid var(--line);
+  background: #101013;
+  border-radius: 8px;
+}
+.modal-body { padding: 1rem; }
+.toast {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 80;
+  display: none;
+  max-width: 380px;
+  border: 1px solid var(--line);
+  background: #141417;
+  border-radius: 8px;
+  padding: .85rem 1rem;
+}
+.toast.show { display: block; }
+.file-line { display: flex; gap: .7rem; align-items: center; }
+.file-line input[type="file"] { flex: 1; }
+.danger-zone { border-color: rgba(255,110,110,.2); background: rgba(120,20,20,.08); }
+@media (max-width: 980px) {
+  .layout { grid-template-columns: 1fr; }
+  .tabs { position: static; height: auto; display: flex; overflow: auto; }
+  .tab { white-space: nowrap; width: auto; }
+  .grid-2, .product-tools { grid-template-columns: 1fr; }
+  .preview-pane { position: static; }
+}
+@media (max-width: 680px) {
+  .topbar, .panel-head { flex-direction: column; align-items: flex-start; }
+  .actions { justify-content: flex-start; }
+}
+.draft-banner {
+  display: none;
+  position: sticky;
+  top: 57px;
+  z-index: 9;
+  background: rgba(255,160,0,.12);
+  border-bottom: 1px solid rgba(255,160,0,.3);
+  padding: .55rem clamp(1rem,3vw,2rem);
+  font-size: .72rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(255,200,80,.9);
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.draft-banner.active { display: flex; }
+.btn.draft-on { background: rgba(255,160,0,.2); border-color: rgba(255,160,0,.55); color: rgba(255,200,80,.95); }
+</style>
+</head>
+<body>
+<section id="login" class="login">
+  <div class="brand">LAVISH</div>
+  <p class="muted">Sign in with your Supabase admin user. This admin saves content to Supabase and uploads images to Cloudinary when configured.</p>
+  <div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="email"></div>
+  <div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password"></div>
+  <button class="btn primary" id="login-btn">Sign In</button>
+  <p class="muted" id="login-note"></p>
+</section>
+
+<main id="app" class="hidden">
+  <header class="topbar">
+    <div>
+      <div class="brand">LAVISH</div>
+      <div class="muted" id="status">Loading...</div>
+    </div>
+    <div class="actions">
+      <a class="btn" href="index.html#menu" target="_blank" rel="noopener">Open Store</a>
+      <button class="btn" id="draft-toggle-btn" onclick="toggleDraftMode()">Draft Mode</button>
+      <button class="btn" id="refresh-btn">Refresh</button>
+      <button class="btn primary" id="quick-add-btn">Add Product</button>
+      <button class="btn" id="signout-btn">Sign Out</button>
+    </div>
+  </header>
+  <div id="draft-banner" class="draft-banner">
+    <span>&#9888; DRAFT MODE &mdash; changes are saved locally only, not published to live</span>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+      <button class="btn mini" onclick="previewDraft()">Preview</button>
+      <button class="btn mini ok" onclick="publishDraft()">Publish to Live</button>
+      <button class="btn mini danger" onclick="discardDraft()">Discard Draft</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside class="tabs" id="tabs">
+      <button class="tab active" data-tab="dashboard">Dashboard</button>
+      <button class="tab" data-tab="products">Products</button>
+      <button class="tab" data-tab="sections">Sections</button>
+      <button class="tab" data-tab="site">Site</button>
+      <button class="tab" data-tab="hero">Hero</button>
+      <button class="tab" data-tab="content">Content</button>
+      <button class="tab" data-tab="checkout">Checkout</button>
+      <button class="tab" data-tab="packaging">Packaging</button>
+      <button class="tab" data-tab="faq">FAQ</button>
+      <button class="tab" data-tab="theme">Theme</button>
+      <button class="tab" data-tab="background">Background</button>
+      <button class="tab" data-tab="analytics">Analytics</button>
+      <button class="tab" data-tab="advanced">Advanced</button>
+      <button class="tab" data-tab="deal">24hr Deal</button>
+    </aside>
+
+    <div class="workspace">
+      <section class="panel active" id="panel-dashboard">
+        <div class="panel-head">
+          <div><div class="sub">Overview</div><h1 class="panel-title">Dashboard</h1></div>
+          <button class="btn primary" data-save="all">Save Everything</button>
+        </div>
+        <div class="panel-body">
+          <div class="metric-grid">
+            <div class="metric"><div class="sub">Products</div><strong id="m-products">0</strong></div>
+            <div class="metric"><div class="sub">Active</div><strong id="m-active">0</strong></div>
+            <div class="metric"><div class="sub">Sections</div><strong id="m-sections">0</strong></div>
+            <div class="metric"><div class="sub">Sold Out</div><strong id="m-soldout">0</strong></div>
+          </div>
+          <div class="section-divider">Quick Controls</div>
+          <div class="grid">
+            <button class="btn primary" onclick="openProduct()">Add Product</button>
+            <button class="btn" onclick="switchTab('sections')">Edit Menu Sections</button>
+            <button class="btn" onclick="switchTab('checkout')">Edit Checkout</button>
+            <button class="btn" onclick="exportBackup()">Download Backup</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-products">
+        <div class="panel-head">
+          <div><div class="sub">Current menu</div><h1 class="panel-title">Products</h1></div>
+          <button class="btn primary" onclick="openProduct()">Add Product</button>
+        </div>
+        <div class="panel-body">
+          <div class="product-tools">
+            <input id="product-search" placeholder="Search products..." oninput="renderProducts()">
+            <select id="product-filter" onchange="renderProducts()"></select>
+            <select id="product-status" onchange="renderProducts()">
+              <option value="all">All status</option>
+              <option value="active">Active only</option>
+              <option value="hidden">Hidden only</option>
+              <option value="sold">Sold out only</option>
+            </select>
+          </div>
+          <div class="products-grid" id="products-list"></div>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-sections">
+        <div class="panel-head">
+          <div><div class="sub">Menu structure</div><h1 class="panel-title">Sections</h1></div>
+          <div class="actions">
+            <button class="btn" onclick="addSection()">Add Section</button>
+            <button class="btn primary" onclick="saveSections()">Save Sections</button>
+          </div>
+        </div>
+        <div class="panel-body grid-2">
+          <div id="sections-list"></div>
+          <aside class="preview-pane">
+            <div class="preview-title">Filter Preview</div>
+            <div class="pill-row" id="sections-preview"></div>
+            <p class="muted">Section IDs become URL anchors and filter buttons. Product category should match a section ID or one of its aliases.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-site">
+        <div class="panel-head">
+          <div><div class="sub">Store controls</div><h1 class="panel-title">Site</h1></div>
+          <button class="btn primary" data-save="settings">Save Site</button>
+        </div>
+        <div class="panel-body grid-2">
+          <div>
+            <div class="grid">
+              <div class="field"><label>Store Name</label><input id="s-name"></div>
+              <div class="field"><label>Announcement Banner</label><input id="s-announcement" placeholder="Leave blank to hide"></div>
+              <div class="field"><label>Order Link</label><input id="s-order" placeholder="https://t.me/Lavishz_bot"></div>
+              <div class="field"><label>Support Link</label><input id="s-support" placeholder="https://t.me/OfficialLavishz"></div>
+              <div class="field"><label>Discord User ID / Link</label><input id="s-discord" placeholder="numeric Discord user ID or Discord URL"></div>
+              <div class="field"><label>Footer Text</label><input id="s-footer"></div>
+            </div>
+            <div class="section-divider">Suggest Box</div>
+            <div class="grid">
+              <div class="field"><label><input type="checkbox" id="s-suggest-enabled"> Show "Recommend a Brand" box</label></div>
+              <div class="field"><label>Suggest Box Label</label><input id="s-suggest-label" placeholder="Recommend a brand"></div>
+            </div>
+            <div class="section-divider">Feature Section</div>
+            <div class="field"><label>Feature Heading</label><input id="s-feature-title"></div>
+            <div class="field"><label>Feature Text</label><textarea id="s-feature-text"></textarea></div>
+          </div>
+          <aside class="preview-pane">
+            <div class="preview-title">Live Copy</div>
+            <div class="editor-card">
+              <div class="brand" id="site-prev-name">LAVISH</div>
+              <p class="muted" id="site-prev-announcement">Announcement preview</p>
+              <p class="muted" id="site-prev-feature">Feature preview</p>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-hero">
+        <div class="panel-head">
+          <div><div class="sub">Landing copy</div><h1 class="panel-title">Hero</h1></div>
+          <button class="btn primary" data-save="settings">Save Hero</button>
+        </div>
+        <div class="panel-body grid-2">
+          <div>
+            <div class="field"><label>Kicker</label><input id="h-kicker"></div>
+            <div class="field"><label>Title</label><input id="h-title"></div>
+            <div class="field"><label>Subheading</label><textarea id="h-sub"></textarea></div>
+            <div class="grid">
+              <div class="field"><label>Primary Button</label><input id="h-btn1"></div>
+              <div class="field"><label>Secondary Button</label><input id="h-btn2"></div>
+            </div>
+            <div class="field"><label>Small Note</label><input id="h-note"></div>
+          </div>
+          <aside class="preview-pane">
+            <div class="preview-title">Hero Preview</div>
+            <div class="hero-preview">
+              <div>
+                <div class="sub" id="hero-prev-kicker">Limited drops</div>
+                <h3 id="hero-prev-title">LAVISH</h3>
+                <p class="muted" id="hero-prev-sub">Premium candy. Low-volume releases.</p>
+                <div class="pill-row" style="justify-content:center">
+                  <span class="pill" id="hero-prev-btn1">Menu</span>
+                  <span class="pill" id="hero-prev-btn2">Order Lavish</span>
+                </div>
+                <p class="muted" id="hero-prev-note">Payments are handled off-site</p>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-content">
+        <div class="panel-head">
+          <div><div class="sub">Trust bar &amp; how it works</div><h1 class="panel-title">Content</h1></div>
+          <button class="btn primary" data-save="settings">Save Content</button>
+        </div>
+        <div class="panel-body">
+          <div class="section-divider">Trust Bar (shown below hero)</div>
+          <div class="grid">
+            <div class="field"><label>Stat 1 — Bold Text</label><input id="tr-s1b" placeholder="200+"></div>
+            <div class="field"><label>Stat 1 — Label</label><input id="tr-s1l" placeholder="Orders Fulfilled"></div>
+            <div class="field"><label>Stat 2 — Bold Text</label><input id="tr-s2b" placeholder="Discreet"></div>
+            <div class="field"><label>Stat 2 — Label</label><input id="tr-s2l" placeholder="Packaging"></div>
+            <div class="field"><label>Stat 3 — Bold Text</label><input id="tr-s3b" placeholder="Fast"></div>
+            <div class="field"><label>Stat 3 — Label</label><input id="tr-s3l" placeholder="Fulfillment"></div>
+            <div class="field"><label>Stat 4 — Bold Text</label><input id="tr-s4b" placeholder="Private"></div>
+            <div class="field"><label>Stat 4 — Label</label><input id="tr-s4l" placeholder="Gift Card Payments"></div>
+          </div>
+          <div class="section-divider">How It Works — Header</div>
+          <div class="grid">
+            <div class="field"><label>⚠ Badge Text</label><input id="tr-must" placeholder="⚠ Read Before Ordering"></div>
+            <div class="field"><label>Eyebrow</label><input id="tr-eyebrow" placeholder="Simple process"></div>
+            <div class="field"><label>Title</label><input id="tr-title" placeholder="How It Works"></div>
+            <div class="field"><label>Subtitle</label><input id="tr-sub" placeholder="Order in under a minute..."></div>
+          </div>
+          <div class="section-divider">Step 1</div>
+          <div class="grid">
+            <div class="field"><label>Title</label><input id="tr-step1-title"></div>
+            <div class="field"><label>Description</label><textarea id="tr-step1-desc"></textarea></div>
+          </div>
+          <div class="section-divider">Step 2</div>
+          <div class="grid">
+            <div class="field"><label>Title</label><input id="tr-step2-title"></div>
+            <div class="field"><label>Description</label><textarea id="tr-step2-desc"></textarea></div>
+          </div>
+          <div class="section-divider">Step 3</div>
+          <div class="grid">
+            <div class="field"><label>Title</label><input id="tr-step3-title"></div>
+            <div class="field"><label>Description</label><textarea id="tr-step3-desc"></textarea></div>
+          </div>
+          <div class="section-divider">Footer Note &amp; FAQ Link</div>
+          <div class="grid">
+            <div class="field"><label>Payment Note (below steps)</label><input id="tr-payment-note"></div>
+            <div class="field"><label>FAQ Link Text</label><input id="tr-faq-link" placeholder="Any other questions?"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-checkout">
+        <div class="panel-head">
+          <div><div class="sub">Cart and checkout</div><h1 class="panel-title">Checkout</h1></div>
+          <button class="btn primary" data-save="settings">Save Checkout</button>
+        </div>
+        <div class="panel-body">
+          <div class="section-divider">Cart</div>
+          <div class="grid">
+            <div class="field"><label>Cart Note (below checkout button)</label><input id="c-cart-note"></div>
+            <div class="field"><label>Checkout Button Text</label><input id="c-checkout-text"></div>
+            <div class="field"><label>Cart Title</label><input id="c-cart-title" placeholder="Your Cart"></div>
+          </div>
+          <div class="section-divider">Checkout Modal</div>
+          <div class="grid">
+            <div class="field"><label>Checkout Title</label><input id="c-title"></div>
+            <div class="field"><label>Checkout Instructions</label><input id="c-instructions" placeholder="Check items, choose options, then send your order."></div>
+            <div class="field"><label>Receipt Heading</label><input id="c-receipt-heading"></div>
+            <div class="field"><label>Receipt Subtext</label><input id="c-receipt-sub"></div>
+            <div class="field"><label>"Send via" Label</label><input id="c-send-via" placeholder="Complete your order on"></div>
+            <div class="field"><label>Copy Button</label><input id="c-copy" placeholder="Copy Order Details"></div>
+            <div class="field"><label>Checkout FAQ Title</label><input id="c-faq-title" placeholder="Why do I finish checkout in chat?"></div>
+            <div class="field"><label>Checkout FAQ Body</label><textarea id="c-faq-body" rows="5" placeholder="Explain why checkout happens in chat..."></textarea></div>
+            <div class="field"><label>Telegram Button</label><input id="c-telegram"></div>
+            <div class="field"><label>Discord Button</label><input id="c-discord"></div>
+            <div class="field"><label>Back Button</label><input id="c-back"></div>
+            <div class="field"><label>Telegram Note (small text under button)</label><input id="c-tg-note"></div>
+          </div>
+          <div class="section-divider">Product Labels</div>
+          <div class="grid">
+            <div class="field"><label>Add to Cart Button</label><input id="c-add-cart" placeholder="ADD TO CART"></div>
+            <div class="field"><label>Sold Out Button</label><input id="c-sold-out" placeholder="SOLD OUT"></div>
+          </div>
+          <div class="section-divider">Navigation &amp; Menu Text</div>
+          <div class="grid">
+            <div class="field"><label>Nav Link 1 (Menu)</label><input id="c-nav1" placeholder="Menu"></div>
+            <div class="field"><label>Nav Link 2 (Order)</label><input id="c-nav2" placeholder="Order Lavish"></div>
+            <div class="field"><label>Menu Section Heading</label><input id="c-menu-heading" placeholder="Our Menu"></div>
+            <div class="field"><label>FAQ Heading</label><input id="c-faq-heading" placeholder="FAQ"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-packaging">
+        <div class="panel-head">
+          <div><div class="sub">Order options</div><h1 class="panel-title">Packaging</h1></div>
+          <div class="actions">
+            <button class="btn" onclick="addPackaging()">Add Packaging</button>
+            <button class="btn" onclick="addShipping()">Add Shipping</button>
+            <button class="btn primary" data-save="settings">Save Options</button>
+          </div>
+        </div>
+        <div class="panel-body grid-2">
+          <div>
+            <div class="section-divider">Packaging Options</div>
+            <div id="packaging-list"></div>
+            <div class="section-divider" style="display:flex;align-items:center;justify-content:space-between">
+              <span>🔌 Plug Section Packaging</span>
+              <button class="btn mini" onclick="addPlugPackaging()">Add</button>
+            </div>
+            <p class="muted" style="margin-bottom:.75rem;font-size:.78rem">Shown <em>instead</em> of the regular packaging above when a plug section item is in the cart.</p>
+            <div id="plug-packaging-list"></div>
+            <div class="section-divider">Shipping Options</div>
+            <div id="shipping-list"></div>
+          </div>
+          <aside class="preview-pane">
+            <div class="preview-title">Option Preview</div>
+            <div id="options-preview"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-faq">
+        <div class="panel-head">
+          <div><div class="sub">Bottom of site</div><h1 class="panel-title">FAQ</h1></div>
+          <div class="actions">
+            <button class="btn" onclick="addFAQ()">Add FAQ</button>
+            <button class="btn primary" data-save="settings">Save FAQ</button>
+          </div>
+        </div>
+        <div class="panel-body grid-2">
+          <div id="faq-list"></div>
+          <aside class="preview-pane">
+            <div class="preview-title">FAQ Preview</div>
+            <div id="faq-preview"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-theme">
+        <div class="panel-head">
+          <div><div class="sub">Colors</div><h1 class="panel-title">Theme</h1></div>
+          <button class="btn primary" data-save="settings">Save Theme</button>
+        </div>
+        <div class="panel-body grid-2">
+          <div class="grid">
+            <div class="field"><label>Accent</label><input type="color" id="t-accent"></div>
+            <div class="field"><label>Site Text</label><input type="color" id="t-text"></div>
+            <div class="field"><label>Nav Background</label><input type="color" id="t-nav-bg"></div>
+            <div class="field"><label>Banner Background</label><input type="color" id="t-banner-bg"></div>
+            <div class="field"><label>Card Background</label><input type="color" id="t-card-bg"></div>
+            <div class="field"><label>Cart Background</label><input type="color" id="t-cart-bg"></div>
+            <div class="field"><label>Button Background</label><input type="color" id="t-btn-bg"></div>
+            <div class="field"><label>Button Text</label><input type="color" id="t-btn-text"></div>
+            <div class="field"><label>Menu Columns</label><input type="number" id="t-menu-cols" min="1" max="4"></div>
+            <div class="field"><label>Label Blur</label><input type="number" id="t-label-blur" min="0" max="12" step=".1"></div>
+          </div>
+          <aside class="preview-pane">
+            <div class="preview-title">Theme Preview</div>
+            <div id="theme-preview" class="editor-card">
+              <div id="theme-prev-banner" style="padding:.35rem .5rem;margin-bottom:.45rem;border-radius:5px;text-align:center;font-size:.65rem">Announcement</div>
+              <div id="theme-prev-card" style="padding:.9rem;border-radius:6px">
+                <strong id="theme-prev-text">Skittles</strong>
+                <button class="btn primary" id="theme-prev-btn" style="margin-top:.65rem;width:100%">Checkout</button>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-background">
+        <div class="panel-head">
+          <div><div class="sub">Canvas atmosphere</div><h1 class="panel-title">Background</h1></div>
+          <div class="actions">
+            <button class="btn" onclick="resetBackground()">Reset</button>
+            <button class="btn primary" data-save="settings">Save Background</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="grid">
+            <div class="field"><label>Top Color</label><input type="color" id="bg-top"></div>
+            <div class="field"><label>Middle Color</label><input type="color" id="bg-mid"></div>
+            <div class="field"><label>Bottom Color</label><input type="color" id="bg-bottom"></div>
+            <div class="field"><label>Tint Color</label><input type="color" id="bg-tint"></div>
+            <div class="field"><label>Star Color 1</label><input type="color" id="bg-star-1"></div>
+            <div class="field"><label>Star Color 2</label><input type="color" id="bg-star-2"></div>
+            <div class="field"><label>Star Color 3</label><input type="color" id="bg-star-3"></div>
+            <div class="field"><label>Star Color 4</label><input type="color" id="bg-star-4"></div>
+            <div class="field"><label>Star Density</label><input type="range" id="bg-density" min="900" max="4200" step="50"></div>
+            <div class="field"><label>Line Distance</label><input type="range" id="bg-line-distance" min="20" max="180" step="1"></div>
+            <div class="field"><label>Twinkle</label><input type="range" id="bg-twinkle" min="0" max=".85" step=".01"></div>
+            <div class="field"><label>Cursor Glow</label><input type="range" id="bg-cursor" min="0" max="7" step=".1"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-analytics">
+        <div class="panel-head">
+          <div><div class="sub">Site traffic</div><h1 class="panel-title">Analytics</h1></div>
+          <a class="btn" href="https://umami-production-d134.up.railway.app/share/0PYJ0kPmcj2d33Z3" target="_blank" rel="noopener">Open Full Dashboard</a>
+        </div>
+        <div class="panel-body">
+          <div class="metric-grid" id="analytics-metrics"></div>
+          <a href="https://umami-production-d134.up.railway.app/share/0PYJ0kPmcj2d33Z3" target="_blank" rel="noopener" style="display:block;text-decoration:none;">
+            <div class="editor-card" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;cursor:pointer;transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(255,255,255,.3)'" onmouseout="this.style.borderColor=''">
+              <div>
+                <div style="font-size:1rem;font-weight:600;margin-bottom:.3rem;">Umami Analytics</div>
+                <div class="muted">Pageviews, visitors, referrers, and more. Hosted on Railway.</div>
+              </div>
+              <div style="flex-shrink:0;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);padding:.5rem .8rem;border-radius:6px;">Open →</div>
+            </div>
+          </a>
+          <p class="muted" style="margin-top:.8rem;font-size:.72rem;">Umami blocks iframe embedding — click the card or use the button above to view your dashboard.</p>
+          <div class="section-divider">Local Store Events</div>
+          <div id="analytics-events"></div>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-advanced">
+        <div class="panel-head">
+          <div><div class="sub">Social, fonts, backup</div><h1 class="panel-title">Advanced</h1></div>
+          <button class="btn primary" data-save="settings">Save Advanced</button>
+        </div>
+        <div class="panel-body">
+          <div class="section-divider">Social Links (shown in footer)</div>
+          <div class="grid">
+            <div class="field"><label>Instagram URL</label><input id="adv-instagram" placeholder="https://instagram.com/..."></div>
+            <div class="field"><label>TikTok URL</label><input id="adv-tiktok" placeholder="https://tiktok.com/@..."></div>
+            <div class="field"><label>Twitter / X URL</label><input id="adv-twitter" placeholder="https://x.com/..."></div>
+          </div>
+          <div class="section-divider">Fonts</div>
+          <div class="grid">
+            <div class="field"><label>Display Font (Google Fonts name)</label><input id="adv-display-font" placeholder="Cinzel"></div>
+            <div class="field"><label>Body Font (Google Fonts name)</label><input id="adv-body-font" placeholder="DM Sans"></div>
+          </div>
+          <div class="section-divider">Backup &amp; Recovery</div>
+          <div class="grid">
+            <button class="btn primary" onclick="exportBackup()">Download Supabase Backup</button>
+            <button class="btn" onclick="document.getElementById('import-file').click()">Import Backup</button>
+            <input id="import-file" type="file" accept="application/json" class="hidden">
+          </div>
+          <div class="editor-card danger-zone" style="margin-top:1rem">
+            <strong>Careful zone</strong>
+            <p class="muted">Import overwrites products, sections, and settings after confirmation. This is only for recovery, not daily use.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-deal">
+        <div class="panel-head">
+          <div><div class="sub">Flash pricing</div><h1 class="panel-title">24hr Deal</h1></div>
+          <button class="btn primary" data-save="settings">Save Deal</button>
+        </div>
+        <div class="panel-body grid-2">
+          <div>
+            <div class="field"><label><input type="checkbox" id="deal-enabled" onchange="updateDealPreview()"> Enable deal banner on site</label></div>
+            <div class="field"><label>Deal Label</label><input id="deal-label" placeholder="24HR DEAL" oninput="updateDealPreview()"></div>
+            <div class="field"><label>Product</label><select id="deal-product-id" onchange="onDealProductChange()"></select></div>
+            <div class="field"><label>Original Price <span class="muted">(shown crossed out)</span></label><input id="deal-original-price" placeholder="$24.99" oninput="updateDealPreview()"></div>
+            <div class="field"><label>Deal Price</label><input id="deal-price" placeholder="$19.99" oninput="updateDealPreview()"></div>
+            <div class="field">
+              <label>Expires At</label>
+              <div style="display:flex;gap:.5rem;align-items:center">
+                <input type="datetime-local" id="deal-expires-at" style="flex:1" oninput="updateDealPreview()">
+                <button class="btn mini" type="button" onclick="setDeal24h()">+24h now</button>
+              </div>
+            </div>
+          </div>
+          <aside class="preview-pane">
+            <div class="preview-title">Live Preview</div>
+            <div class="editor-card" style="padding:1.1rem;text-align:center">
+              <div id="deal-prev-label" style="color:#88d8a2;font-size:.66rem;font-weight:700;letter-spacing:.26em;text-transform:uppercase;margin-bottom:.3rem">24HR DEAL</div>
+              <div id="deal-prev-name" style="font-size:1rem;font-weight:600;margin-bottom:.35rem">—</div>
+              <div style="display:flex;align-items:center;justify-content:center;gap:.5rem;margin-bottom:.4rem">
+                <span id="deal-prev-orig" style="text-decoration:line-through;opacity:.48;font-size:.88em"></span>
+                <span id="deal-prev-price" style="color:#88d8a2;font-weight:700"></span>
+              </div>
+              <div id="deal-prev-expiry" style="color:var(--faint);font-size:.68rem"></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<section id="product-modal" class="modal" aria-hidden="true">
+  <div class="modal-card">
+    <div class="panel-head">
+      <div><div class="sub" id="product-modal-sub">Product</div><h1 class="panel-title" id="product-modal-title">Edit Product</h1></div>
+      <button class="btn" id="product-close">Close</button>
+    </div>
+    <div class="modal-body">
+      <div class="grid">
+        <div class="field"><label>Name</label><input id="p-name"></div>
+        <div class="field"><label>Price</label><input id="p-price" placeholder="$24.99"></div>
+        <div class="field"><label>Section</label><select id="p-cat"></select></div>
+        <div class="field"><label>Tag</label><input id="p-tag"></div>
+        <div class="field"><label>Fallback Mark</label><input id="p-mark" maxlength="6"></div>
+        <div class="field"><label>Sort Order</label><input id="p-sort" type="number" min="0"></div>
+        <div class="field"><label>Total Stock</label><input id="p-stock" type="number" min="0" placeholder="Auto from flavors"></div>
+      </div>
+      <div class="field"><label>Description</label><textarea id="p-desc"></textarea></div>
+      <div class="field"><label>Flavors</label><textarea id="p-flavors" placeholder="Comma separated, e.g. Blue Razz, Watermelon Ice"></textarea></div>
+      <div class="field">
+        <label>Flavor Stock</label>
+        <div id="flavor-stock-editor" class="grid"></div>
+        <small class="muted">Each flavor gets its own stock box. Total Stock updates from these values.</small>
+      </div>
+      <div class="grid">
+        <div class="field">
+          <label>Upload Image</label>
+          <div class="file-line"><input id="p-file" type="file" accept="image/*"><button class="btn mini" id="upload-now">Upload</button></div>
+          <small class="muted" id="upload-provider-note"></small>
+        </div>
+        <div class="field"><label>Image URL</label><input id="p-image" placeholder="https://..."></div>
+      </div>
+      <div class="grid">
+        <label><input id="p-active" type="checkbox"> Active</label>
+        <label><input id="p-soldout" type="checkbox"> Sold Out</label>
+      </div>
+      <div class="actions" style="margin-top:1rem">
+        <button class="btn primary" id="product-save">Save Product</button>
+        <button class="btn" id="product-duplicate">Duplicate</button>
+        <button class="btn danger" id="product-delete">Delete</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="toast" class="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="backend-config.js?v=4"></script>
+<script>
+const cfg = window.LAVISH_BACKEND_CONFIG || {};
+const db = window.supabase?.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+
+const ORDERING_TRUST = {
+  howEyebrow: "Read Before Ordering",
+  howTitle: "HOW ORDERING WORKS",
+  howSub: "",
+  steps: [
+    {
+      title: "WHY GIFT CARDS?",
+      desc: "We use G2A/Kinguin crypto vouchers because they are simple and private:\n- Buy the voucher with your normal card on G2A or Kinguin\n- Your bank statement only shows G2A or Kinguin\n- Send us the code and we redeem it instantly\n- No personal info needed"
+    },
+    {
+      title: "WHY OFF SITE?",
+      desc: "We keep checkout off the website to protect your privacy and ours. No personal data or order records are collected here."
+    },
+    {
+      title: "SEND VIA TELEGRAM OR DISCORD",
+      desc: "Paste your order and send your gift card code. We fulfill within a few hours and confirm when it is on the way."
+    }
+  ],
+  paymentNote: "",
+  faqLinkText: ""
+};
+
+const DEFAULT_SETTINGS = {
+  name: "LAVISH",
+  announcement: "",
+  orderLink: "https://t.me/Lavishz_bot",
+  supportLink: "https://t.me/OfficialLavishz",
+  discordUsername: "https://discord.gg/cmmZAKqaUQ",
+  featureTitle: "Quiet drops.",
+  featureText: "Premium candy. Low-volume releases. Fresh menu updates when stock changes.",
+  footer: "(c) 2026 Lavish. All rights reserved.",
+  cartNote: "Checkout opens your off-site payment link.",
+  checkoutButtonText: "Checkout",
+  suggestBoxEnabled: false,
+  suggestBoxLabel: "Recommend a brand",
+  deal: { enabled: false, label: "24HR DEAL", productId: "", productName: "", originalPrice: "", dealPrice: "", expiresAt: "" },
+  advanced: { instagram: "", tiktok: "", twitter: "", displayFont: "", bodyFont: "" },
+  trust: {
+    bar: [
+      { bold: "200+", label: "Orders Fulfilled" },
+      { bold: "Discreet", label: "Packaging" },
+      { bold: "Fast", label: "Fulfillment" },
+      { bold: "Private", label: "Gift Card Payments" }
+    ],
+    howEyebrow: ORDERING_TRUST.howEyebrow,
+    howTitle: ORDERING_TRUST.howTitle,
+    howSub: ORDERING_TRUST.howSub,
+    steps: ORDERING_TRUST.steps,
+    paymentNote: ORDERING_TRUST.paymentNote,
+    faqLinkText: ORDERING_TRUST.faqLinkText
+  },
+  hero: {
+    kicker: "Limited drops / private stock",
+    title: "LAVISH",
+    sub: "Premium candy. Low-volume releases.",
+    btn1: "Menu",
+    btn2: "Order Lavish",
+    note: "Payments are handled off-site"
+  },
+  packagingOptions: [
+    { name: "Standard Box", note: "Ships in selected packaging", image: "", mark: "BOX" }
+  ],
+  shippingOptions: [],
+  faqItems: [],
+  theme: {
+    accent: "#781222",
+    siteText: "#e0e0e0",
+    navBg: "#000000",
+    bannerBg: "#780c12",
+    cardBg: "#0a0000",
+    cartBg: "#000000",
+    btnBg: "#e8e8e8",
+    btnText: "#000000",
+    menuCols: 3,
+    labelBlur: 3.5
+  },
+  copy: {},
+  checkout: {},
+  background: {
+    top: "#050102",
+    mid: "#020101",
+    bottom: "#010101",
+    tint: "#781822",
+    tintOpacity: 0.006,
+    speed: 0.000155,
+    starColors: ["#e02535", "#d4006e", "#1a35e0", "#8020e0"],
+    starDensity: 900,
+    starAlphaMin: 0.4,
+    starAlphaMax: 0.85,
+    starTwinkle: 0.85,
+    cursorBoost: 7,
+    starSizeMin: 0.55,
+    starSizeMax: 1.8,
+    starCursorRadius: 41,
+    starGlow: 5,
+    lineDistance: 124,
+    lineCursor: 35,
+    lineMax: 2,
+    lineOpacity: 0.6,
+    lineWidth: 1,
+    lineNeighbor: 1.12
+  }
+};
+
+let products = [];
+let sections = [];
+let settings = structuredClone(DEFAULT_SETTINGS);
+let editingId = null;
+let deletedSections = new Set();
+
+// --- Draft Mode ---
+let draftMode = false;
+
+function getDraft() {
+  try { return JSON.parse(localStorage.getItem("lavish_draft_v1") || "null"); } catch(e) { return null; }
+}
+function persistDraft() {
+  localStorage.setItem("lavish_draft_v1", JSON.stringify({ settings, sections, products }));
+}
+function clearDraft() {
+  localStorage.removeItem("lavish_draft_v1");
+}
+function loadFromDraft() {
+  const draft = getDraft();
+  if (!draft) { loadAll(); return; }
+  settings = upgradeOrderingTrust(deepMerge(DEFAULT_SETTINGS, draft.settings || {}));
+  sections = draft.sections || [];
+  products = draft.products || [];
+  deletedSections = new Set();
+  renderAll();
+  $("status").textContent = `DRAFT: ${products.length} products, ${sections.length} sections`;
+}
+function updateDraftUI() {
+  const btn = $("draft-toggle-btn");
+  const banner = $("draft-banner");
+  if (draftMode) {
+    btn.classList.add("draft-on");
+    btn.textContent = "Draft Mode ON";
+    banner.classList.add("active");
+  } else {
+    btn.classList.remove("draft-on");
+    btn.textContent = "Draft Mode";
+    banner.classList.remove("active");
+  }
+}
+function toggleDraftMode() {
+  draftMode = !draftMode;
+  updateDraftUI();
+  if (draftMode) {
+    if (!getDraft()) persistDraft();
+    loadFromDraft();
+  } else {
+    loadAll();
+  }
+}
+function previewDraft() {
+  persistDraft();
+  window.open("index.html?draft=1", "_blank");
+}
+async function publishDraft() {
+  const draft = getDraft();
+  if (!draft) { toast("No draft to publish"); return; }
+  if (!confirm("Publish draft to live? This overwrites your live Supabase data.")) return;
+  try {
+    $("status").textContent = "Publishing draft...";
+    await db.from("site_settings").upsert({ id: "main", data: draft.settings, updated_at: new Date().toISOString() });
+    if (draft.sections.length) await db.from("menu_sections").upsert(draft.sections);
+    await db.from("products").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+    if (draft.products.length) {
+      const rows = draft.products.map(p => {
+        const row = { ...p };
+        if (String(row.id).startsWith("draft-")) delete row.id;
+        return row;
+      });
+      await db.from("products").insert(rows);
+    }
+    clearDraft();
+    draftMode = false;
+    updateDraftUI();
+    await loadAll();
+    toast("Draft published to live ✓");
+  } catch (err) {
+    toast("Publish failed: " + (err.message || err));
+    $("status").textContent = "Publish failed";
+  }
+}
+function discardDraft() {
+  if (!confirm("Discard all draft changes and reload from live?")) return;
+  clearDraft();
+  draftMode = false;
+  updateDraftUI();
+  loadAll();
+  toast("Draft discarded");
+}
+// --- End Draft Mode ---
+
+const $ = id => document.getElementById(id);
+const $$ = selector => Array.from(document.querySelectorAll(selector));
+
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function deepMerge(base, extra) {
+  const out = clone(base);
+  Object.entries(extra || {}).forEach(([key, value]) => {
+    if (value && typeof value === "object" && !Array.isArray(value) && out[key] && typeof out[key] === "object" && !Array.isArray(out[key])) {
+      out[key] = deepMerge(out[key], value);
+    } else {
+      out[key] = value;
+    }
+  });
+  return out;
+}
+
+function escapeHTML(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function slugify(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "section";
+}
+
+function liveInputValue(value) {
+  const text = String(value || "").trim();
+  return text.startsWith("PUT_") ? "" : text;
+}
+
+function liveInputOrFallback(value, fallback) {
+  return liveInputValue(value) || fallback;
+}
+
+function isOldOrderingTrust(trust) {
+  const steps = trust?.steps || [];
+  return !trust
+    || trust.howTitle === "How It Works"
+    || trust.howTitle === "How ordering works"
+    || steps[0]?.title === "Browse & Add to Cart"
+    || steps[1]?.title === "Checkout & Copy Order"
+    || steps[0]?.title === "Why gift cards?"
+    || steps[1]?.title === "Why off site?";
+}
+
+function upgradeOrderingTrust(settingsData) {
+  if (isOldOrderingTrust(settingsData.trust)) {
+    settingsData.trust = {
+      ...(settingsData.trust || {}),
+      ...clone(ORDERING_TRUST)
+    };
+  }
+  return settingsData;
+}
+
+function fieldValue(id) {
+  return $(id).value.trim();
+}
+
+function objectFieldValue(object, key, fallback = "") {
+  return Object.prototype.hasOwnProperty.call(object || {}, key) ? object[key] || "" : fallback;
+}
+
+function hasLiveConfig(value) {
+  return Boolean(liveInputValue(value));
+}
+
+function imageUploadProvider() {
+  if (hasLiveConfig(cfg.cloudinaryCloudName) && hasLiveConfig(cfg.cloudinaryUploadPreset)) return "Cloudinary";
+  return "Supabase Storage";
+}
+
+function renderUploadProviderNote() {
+  const note = $("upload-provider-note");
+  if (!note) return;
+  if (hasLiveConfig(cfg.cloudinaryCloudName) && !hasLiveConfig(cfg.cloudinaryUploadPreset)) {
+    note.textContent = "Cloudinary cloud found. Add an unsigned upload preset in backend-config.js to upload there.";
+    return;
+  }
+  note.textContent = `Images upload to ${imageUploadProvider()}.`;
+}
+
+function toast(message) {
+  $("toast").textContent = message;
+  $("toast").classList.add("show");
+  setTimeout(() => $("toast").classList.remove("show"), 2400);
+}
+
+function sectionTitle(id) {
+  return sections.find(section => section.id === id)?.title || id || "Other";
+}
+
+function switchTab(tab) {
+  $$(".tab").forEach(btn => btn.classList.toggle("active", btn.dataset.tab === tab));
+  $$(".panel").forEach(panel => panel.classList.toggle("active", panel.id === `panel-${tab}`));
+}
+
+async function requireSession() {
+  if (!db) {
+    $("login-note").textContent = "Missing backend-config.js Supabase settings.";
+    return;
+  }
+  const { data } = await db.auth.getSession();
+  if (data.session) showApp();
+}
+
+async function login() {
+  $("login-note").textContent = "Signing in...";
+  const { error } = await db.auth.signInWithPassword({
+    email: $("email").value.trim(),
+    password: $("password").value
+  });
+  if (error) {
+    $("login-note").textContent = error.message;
+    return;
+  }
+  $("login-note").textContent = "";
+  showApp();
+}
+
+async function showApp() {
+  $("login").classList.add("hidden");
+  $("app").classList.remove("hidden");
+  await loadAll();
+}
+
+async function signOut() {
+  await db.auth.signOut();
+  $("app").classList.add("hidden");
+  $("login").classList.remove("hidden");
+}
+
+async function loadAll() {
+  if (draftMode) { loadFromDraft(); return; }
+  try {
+    $("status").textContent = "Loading Supabase data...";
+    const [settingsResult, sectionResult, productResult] = await Promise.all([
+      db.from("site_settings").select("data").eq("id", "main").maybeSingle(),
+      db.from("menu_sections").select("*").order("sort_order", { ascending: true }),
+      db.from("products").select("*").order("sort_order", { ascending: true })
+    ]);
+    if (settingsResult.error) throw settingsResult.error;
+    if (sectionResult.error) throw sectionResult.error;
+    if (productResult.error) throw productResult.error;
+    settings = upgradeOrderingTrust(deepMerge(DEFAULT_SETTINGS, settingsResult.data?.data || {}));
+    sections = sectionResult.data || [];
+    products = productResult.data || [];
+    deletedSections = new Set();
+    if (!sections.length) {
+      sections = [
+        { id: "yarts", title: "Yarts", sub: "", aliases: ["yarts"], sort_order: 1 },
+        { id: "nicotine", title: "Disposables", sub: "", aliases: ["nicotine", "disposables"], sort_order: 2 },
+        { id: "flower-rosin", title: "Flower/Rosin", sub: "", aliases: ["flower-rosin", "flower", "rosin"], sort_order: 3 },
+        { id: "eddies", title: "Eddies", sub: "", aliases: ["eddies", "edibles"], sort_order: 4 }
+      ];
+    }
+    renderAll();
+    $("status").textContent = `${products.length} products, ${sections.length} sections loaded`;
+  } catch (error) {
+    $("status").textContent = "Load failed";
+    toast(error.message || "Could not load Supabase data");
+    throw error;
+  }
+}
+
+function renderAll() {
+  renderDashboard();
+  renderSite();
+  renderHero();
+  renderCategoryOptions();
+  renderProducts();
+  renderSections();
+  renderCheckout();
+  renderPackaging();
+  renderFAQ();
+  renderTheme();
+  renderBackground();
+  renderContent();
+  renderAdvanced();
+  renderAnalytics();
+  renderDeal();
+}
+
+function renderDashboard() {
+  $("m-products").textContent = products.length;
+  $("m-active").textContent = products.filter(p => p.active !== false).length;
+  $("m-sections").textContent = sections.length;
+  $("m-soldout").textContent = products.filter(p => p.sold_out === true).length;
+}
+
+function renderSite() {
+  $("s-name").value = settings.name || "";
+  $("s-announcement").value = settings.announcement || "";
+  $("s-order").value = liveInputValue(settings.orderLink);
+  $("s-support").value = liveInputValue(settings.supportLink);
+  $("s-discord").value = settings.discordUsername || "";
+  $("s-footer").value = settings.footer || "";
+  $("s-feature-title").value = settings.featureTitle || "";
+  $("s-feature-text").value = settings.featureText || "";
+  $("s-suggest-enabled").checked = settings.suggestBoxEnabled || false;
+  $("s-suggest-label").value = settings.suggestBoxLabel || "";
+  updateSitePreview();
+}
+
+function renderHero() {
+  const hero = settings.hero || {};
+  $("h-kicker").value = hero.kicker || "";
+  $("h-title").value = hero.title || "";
+  $("h-sub").value = hero.sub || "";
+  $("h-btn1").value = hero.btn1 || "";
+  $("h-btn2").value = hero.btn2 || "";
+  $("h-note").value = hero.note || "";
+  updateHeroPreview();
+}
+
+function renderCheckout() {
+  const copy = settings.copy || {};
+  $("c-cart-note").value = settings.cartNote || "";
+  $("c-checkout-text").value = settings.checkoutButtonText || "";
+  $("c-title").value = objectFieldValue(copy, "checkoutTitle", "CHECKOUT");
+  $("c-instructions").value = objectFieldValue(copy, "checkoutInstructions");
+  $("c-receipt-heading").value = objectFieldValue(copy, "receiptHeading", "Receipt preview");
+  $("c-receipt-sub").value = objectFieldValue(copy, "receiptSub", "This is the exact text that gets copied.");
+  $("c-send-via").value = objectFieldValue(copy, "sendViaLabel", "Complete your order on");
+  $("c-copy").value = objectFieldValue(copy, "copyBtn", "Copy Order Details");
+  $("c-telegram").value = objectFieldValue(copy, "telegramButton", "Open Telegram");
+  $("c-discord").value = objectFieldValue(copy, "discordButton", "Open Discord");
+  $("c-back").value = objectFieldValue(copy, "backBtn", "Back to Cart");
+  $("c-tg-note").value = objectFieldValue(copy, "telegramNote");
+  $("c-sold-out").value = objectFieldValue(copy, "soldOut", "SOLD OUT");
+  $("c-add-cart").value = objectFieldValue(copy, "addToCart", "ADD TO CART");
+  $("c-nav1").value = objectFieldValue(copy, "nav1");
+  $("c-nav2").value = objectFieldValue(copy, "nav2");
+  $("c-menu-heading").value = objectFieldValue(copy, "menuHeading");
+  $("c-cart-title").value = objectFieldValue(copy, "cartTitle");
+  $("c-faq-heading").value = objectFieldValue(copy, "faqHeading");
+  $("c-faq-title").value = objectFieldValue(copy, "faqTitle", "Why do I finish checkout in chat?");
+  $("c-faq-body").value = objectFieldValue(copy, "faqBody", "");
+}
+
+function renderContent() {
+  const t = settings.trust || {};
+  const bar = t.bar || [{bold:"200+",label:"Orders Fulfilled"},{bold:"Discreet",label:"Packaging"},{bold:"Fast",label:"Fulfillment"},{bold:"Private",label:"Gift Card Payments"}];
+  $("tr-s1b").value = bar[0]?.bold || ""; $("tr-s1l").value = bar[0]?.label || "";
+  $("tr-s2b").value = bar[1]?.bold || ""; $("tr-s2l").value = bar[1]?.label || "";
+  $("tr-s3b").value = bar[2]?.bold || ""; $("tr-s3l").value = bar[2]?.label || "";
+  $("tr-s4b").value = bar[3]?.bold || ""; $("tr-s4l").value = bar[3]?.label || "";
+  $("tr-must").value = t.mustReadText || "";
+  $("tr-eyebrow").value = t.howEyebrow || "";
+  $("tr-title").value = t.howTitle || "";
+  $("tr-sub").value = t.howSub || "";
+  const steps = t.steps || [];
+  $("tr-step1-title").value = steps[0]?.title || ""; $("tr-step1-desc").value = steps[0]?.desc || "";
+  $("tr-step2-title").value = steps[1]?.title || ""; $("tr-step2-desc").value = steps[1]?.desc || "";
+  $("tr-step3-title").value = steps[2]?.title || ""; $("tr-step3-desc").value = steps[2]?.desc || "";
+  $("tr-payment-note").value = t.paymentNote || "";
+  $("tr-faq-link").value = t.faqLinkText || "";
+}
+
+function renderAdvanced() {
+  const adv = settings.advanced || {};
+  $("adv-instagram").value = adv.instagram || "";
+  $("adv-tiktok").value = adv.tiktok || "";
+  $("adv-twitter").value = adv.twitter || "";
+  $("adv-display-font").value = adv.displayFont || "";
+  $("adv-body-font").value = adv.bodyFont || "";
+}
+
+function renderCategoryOptions(selected = "") {
+  const options = sections.map(section => `<option value="${escapeHTML(section.id)}" ${section.id === selected ? "selected" : ""}>${escapeHTML(section.title)}</option>`).join("");
+  $("p-cat").innerHTML = options;
+  $("product-filter").innerHTML = `<option value="all">All sections</option>${options}`;
+}
+
+function productMatchesFilters(product) {
+  const query = $("product-search")?.value.trim().toLowerCase() || "";
+  const filter = $("product-filter")?.value || "all";
+  const status = $("product-status")?.value || "all";
+  const haystack = [product.name, product.price, product.cat, product.tag, product.description, product.flavors].join(" ").toLowerCase();
+  if (query && !haystack.includes(query)) return false;
+  if (filter !== "all" && product.cat !== filter) return false;
+  if (status === "active" && product.active === false) return false;
+  if (status === "hidden" && product.active !== false) return false;
+  if (status === "sold" && product.sold_out !== true) return false;
+  return true;
+}
+
+function renderProducts() {
+  const visible = products.filter(productMatchesFilters);
+  $("products-list").innerHTML = visible.map(product => {
+    const flavorStock = normalizeFlavorStock(product.flavor_stock);
+    const flavorValues = Object.values(flavorStock).filter(value => Number.isFinite(Number(value)));
+    const flavorTotal = flavorValues.length ? flavorValues.reduce((sum, value) => sum + Math.max(0, Number(value) || 0), 0) : null;
+    const stock = product.stock != null && product.stock !== "" ? Number(product.stock) : null;
+    const stockText = product.sold_out
+      ? "Sold Out"
+      : Number.isFinite(flavorTotal)
+        ? `${flavorTotal} total / ${flavorValues.length} flavors`
+      : Number.isFinite(stock)
+        ? `${stock} in stock`
+        : "Stock not set";
+    const stockClass = product.sold_out || stock === 0
+      ? "off"
+      : Number.isFinite(stock) && stock <= 25
+        ? "warn"
+        : "ok";
+    const img = product.image_url
+      ? `<img src="${escapeHTML(product.image_url)}" alt="${escapeHTML(product.name)}">`
+      : escapeHTML(product.mark || product.name?.charAt(0) || "L");
+    const badges = [
+      product.active !== false ? ["Active", "ok"] : ["Hidden", "off"],
+      [stockText, stockClass],
+      [sectionTitle(product.cat), ""]
+    ].filter(Boolean);
+    return `
+      <article class="card">
+        <div class="preview">${img}</div>
+        <div class="card-body">
+          <div class="card-top">
+            <h3>${escapeHTML(product.name)}</h3>
+            <div class="price">${escapeHTML(product.price)}</div>
+          </div>
+          <p class="desc">${escapeHTML(product.description)}</p>
+          <div class="badge-row">${badges.map(([label, cls]) => `<span class="badge ${cls}">${escapeHTML(label)}</span>`).join("")}</div>
+          <div class="actions">
+            <button class="btn mini" onclick="adjustStock('${product.id}', -1)">-1</button>
+            <button class="btn mini" onclick="adjustStock('${product.id}', 1)">+1</button>
+            <button class="btn mini" onclick="openProduct('${product.id}')">Edit</button>
+            <button class="btn mini" onclick="duplicateProduct('${product.id}')">Duplicate</button>
+          </div>
+        </div>
+      </article>`;
+  }).join("") || `<p class="muted">No products match that filter.</p>`;
+}
+
+async function adjustStock(id, delta) {
+  const product = products.find(item => String(item.id) === String(id));
+  if (!product) return;
+  const current = Number.isFinite(Number(product.stock)) ? Number(product.stock) : 0;
+  const stock = Math.max(0, current + delta);
+  const sold_out = stock === 0;
+  const previous = { stock: product.stock, sold_out: product.sold_out };
+  product.stock = stock;
+  product.sold_out = sold_out;
+  renderProducts();
+  renderDashboard();
+  if (draftMode) {
+    persistDraft();
+    toast(`${product.name} stock: ${stock} (draft)`);
+    return;
+  }
+  const { error } = await db.from("products").update({ stock, sold_out }).eq("id", id);
+  if (error) {
+    product.stock = previous.stock;
+    product.sold_out = previous.sold_out;
+    renderProducts();
+    renderDashboard();
+    toast(error.message || "Stock update failed");
+    return;
+  }
+  toast(`${product.name} stock: ${stock}`);
+}
+
+function parseFlavors(value) {
+  return String(value || "")
+    .split(",")
+    .map(item => item.trim())
+    .filter(Boolean);
+}
+
+function normalizeFlavorStock(value) {
+  if (!value) return {};
+  if (typeof value === "string") {
+    try {
+      return JSON.parse(value) || {};
+    } catch (error) {
+      return {};
+    }
+  }
+  return typeof value === "object" ? value : {};
+}
+
+function renderFlavorStockEditor(existing = {}) {
+  const flavors = parseFlavors($("p-flavors").value);
+  const stock = normalizeFlavorStock(existing);
+  $("flavor-stock-editor").innerHTML = flavors.length
+    ? flavors.map(flavor => `
+      <div class="field">
+        <label>${escapeHTML(flavor)}</label>
+        <input type="number" min="0" step="1" data-flavor="${escapeHTML(flavor)}" value="${stock[flavor] ?? ""}" oninput="syncTotalStockFromFlavors()">
+      </div>
+    `).join("")
+    : `<p class="muted">Add flavors above to edit stock per flavor.</p>`;
+  syncTotalStockFromFlavors();
+}
+
+function collectFlavorStock() {
+  const stock = {};
+  $("flavor-stock-editor").querySelectorAll("[data-flavor]").forEach(input => {
+    const flavor = input.dataset.flavor;
+    const raw = input.value.trim();
+    if (flavor && raw !== "") stock[flavor] = Math.max(0, Math.floor(Number(raw) || 0));
+  });
+  return stock;
+}
+
+function syncTotalStockFromFlavors() {
+  const stock = collectFlavorStock();
+  const values = Object.values(stock);
+  if (!values.length) return;
+  $("p-stock").value = values.reduce((sum, value) => sum + value, 0);
+}
+
+function renderSections() {
+  $("sections-list").innerHTML = sections.map((section, index) => sectionRow(section, index)).join("");
+  updateSectionsPreview();
+}
+
+function sectionRow(section, index) {
+  return `
+    <div class="editor-card section-row" data-original-id="${escapeHTML(section.id || "")}">
+      <div class="editor-head">
+        <strong>${escapeHTML(section.title || "Section")}</strong>
+        <button class="btn mini danger" onclick="removeSection(this)">Remove</button>
+      </div>
+      <div class="grid">
+        <div class="field"><label>Title</label><input data-section-field="title" value="${escapeHTML(section.title)}" oninput="syncSectionSlug(this); updateSectionsPreview()"></div>
+        <div class="field"><label>ID / Anchor</label><input data-section-field="id" value="${escapeHTML(section.id)}" oninput="updateSectionsPreview()"></div>
+        <div class="field"><label>Subtitle</label><input data-section-field="sub" value="${escapeHTML(section.sub || "")}" oninput="updateSectionsPreview()"></div>
+        <div class="field"><label>Sort Order</label><input type="number" data-section-field="sort_order" value="${Number(section.sort_order) || index + 1}" oninput="updateSectionsPreview()"></div>
+      </div>
+      <div class="field"><label>Aliases, comma separated</label><input data-section-field="aliases" value="${escapeHTML((section.aliases || [section.id]).join(", "))}"></div>
+    </div>`;
+}
+
+function syncSectionSlug(input) {
+  const row = input.closest(".section-row");
+  const idInput = row.querySelector('[data-section-field="id"]');
+  if (!row.dataset.originalId && !idInput.dataset.touched) idInput.value = slugify(input.value);
+}
+
+function addSection() {
+  sections.push({ id: `section-${sections.length + 1}`, title: "New Section", sub: "", aliases: [], sort_order: sections.length + 1 });
+  renderSections();
+}
+
+function removeSection(button) {
+  const row = button.closest(".section-row");
+  const originalId = row.dataset.originalId;
+  if (originalId) deletedSections.add(originalId);
+  row.remove();
+  updateSectionsPreview();
+}
+
+function collectSections() {
+  return $$(".section-row").map((row, index) => {
+    const value = field => row.querySelector(`[data-section-field="${field}"]`)?.value || "";
+    const id = slugify(value("id") || value("title"));
+    return {
+      id,
+      title: value("title").trim() || id,
+      sub: value("sub").trim(),
+      aliases: value("aliases").split(",").map(item => item.trim()).filter(Boolean),
+      sort_order: Number(value("sort_order")) || index + 1
+    };
+  });
+}
+
+function updateSectionsPreview() {
+  const draft = collectSections();
+  $("sections-preview").innerHTML = [`<span class="pill">All</span>`, ...draft.map(section => `<span class="pill">${escapeHTML(section.title)}</span>`)].join("");
+}
+
+async function saveSections() {
+  const draft = collectSections();
+  if (!draft.length) {
+    toast("Add at least one section");
+    return false;
+  }
+  const ids = new Set(draft.map(section => section.id));
+  if (ids.size !== draft.length) {
+    toast("Section IDs must be unique");
+    return false;
+  }
+  if (draftMode) {
+    sections = draft;
+    deletedSections = new Set();
+    persistDraft();
+    await loadAll();
+    toast("Sections saved to draft");
+    return true;
+  }
+  const { error: upsertError } = await db.from("menu_sections").upsert(draft);
+  if (upsertError) {
+    toast(upsertError.message);
+    return false;
+  }
+  for (const id of deletedSections) {
+    if (!ids.has(id)) await db.from("menu_sections").delete().eq("id", id);
+  }
+  await loadAll();
+  toast("Sections saved");
+  return true;
+}
+
+function updateSitePreview() {
+  $("site-prev-name").textContent = $("s-name").value;
+  $("site-prev-announcement").textContent = $("s-announcement").value;
+  $("site-prev-feature").textContent = `${$("s-feature-title").value} - ${$("s-feature-text").value}`;
+}
+
+function updateHeroPreview() {
+  $("hero-prev-kicker").textContent = $("h-kicker").value;
+  $("hero-prev-title").textContent = $("h-title").value;
+  $("hero-prev-sub").textContent = $("h-sub").value;
+  $("hero-prev-btn1").textContent = $("h-btn1").value;
+  $("hero-prev-btn2").textContent = $("h-btn2").value;
+  $("hero-prev-note").textContent = $("h-note").value;
+}
+
+function collectSettingsFromFields() {
+  settings.name = fieldValue("s-name");
+  settings.announcement = fieldValue("s-announcement");
+  settings.orderLink = liveInputValue($("s-order").value);
+  settings.supportLink = liveInputValue($("s-support").value);
+  settings.discordUsername = fieldValue("s-discord");
+  settings.footer = fieldValue("s-footer");
+  settings.featureTitle = fieldValue("s-feature-title");
+  settings.featureText = fieldValue("s-feature-text");
+  settings.suggestBoxEnabled = $("s-suggest-enabled").checked;
+  settings.suggestBoxLabel = fieldValue("s-suggest-label");
+  settings.cartNote = fieldValue("c-cart-note");
+  settings.checkoutButtonText = fieldValue("c-checkout-text");
+  settings.hero = {
+    kicker: fieldValue("h-kicker"),
+    title: fieldValue("h-title"),
+    sub: fieldValue("h-sub"),
+    btn1: fieldValue("h-btn1"),
+    btn2: fieldValue("h-btn2"),
+    note: fieldValue("h-note")
+  };
+  settings.copy = {
+    ...(settings.copy || {}),
+    checkoutTitle: fieldValue("c-title"),
+    checkoutInstructions: fieldValue("c-instructions"),
+    receiptHeading: fieldValue("c-receipt-heading"),
+    receiptSub: fieldValue("c-receipt-sub"),
+    sendViaLabel: fieldValue("c-send-via"),
+    copyBtn: fieldValue("c-copy"),
+    telegramButton: fieldValue("c-telegram"),
+    discordButton: fieldValue("c-discord"),
+    backBtn: fieldValue("c-back"),
+    telegramNote: fieldValue("c-tg-note"),
+    soldOut: fieldValue("c-sold-out"),
+    addToCart: fieldValue("c-add-cart"),
+    nav1: fieldValue("c-nav1"),
+    nav2: fieldValue("c-nav2"),
+    menuHeading: fieldValue("c-menu-heading"),
+    cartTitle: fieldValue("c-cart-title"),
+    faqHeading: fieldValue("c-faq-heading"),
+    faqTitle: fieldValue("c-faq-title"),
+    faqBody: fieldValue("c-faq-body")
+  };
+  settings.advanced = {
+    instagram: fieldValue("adv-instagram"),
+    tiktok: fieldValue("adv-tiktok"),
+    twitter: fieldValue("adv-twitter"),
+    displayFont: fieldValue("adv-display-font"),
+    bodyFont: fieldValue("adv-body-font")
+  };
+  const collectedBar = [
+    { bold: fieldValue("tr-s1b"), label: fieldValue("tr-s1l") },
+    { bold: fieldValue("tr-s2b"), label: fieldValue("tr-s2l") },
+    { bold: fieldValue("tr-s3b"), label: fieldValue("tr-s3l") },
+    { bold: fieldValue("tr-s4b"), label: fieldValue("tr-s4l") }
+  ];
+  const collectedSteps = [
+    { title: fieldValue("tr-step1-title"), desc: fieldValue("tr-step1-desc") },
+    { title: fieldValue("tr-step2-title"), desc: fieldValue("tr-step2-desc") },
+    { title: fieldValue("tr-step3-title"), desc: fieldValue("tr-step3-desc") }
+  ];
+  settings.trust = {
+    bar: collectedBar,
+    mustReadText: fieldValue("tr-must"),
+    howEyebrow: fieldValue("tr-eyebrow"),
+    howTitle: fieldValue("tr-title"),
+    howSub: fieldValue("tr-sub"),
+    steps: collectedSteps,
+    paymentNote: fieldValue("tr-payment-note"),
+    faqLinkText: fieldValue("tr-faq-link")
+  };
+  settings.packagingOptions = collectPackaging();
+  settings.shippingOptions = collectShipping();
+  if (!settings.sectionPackaging) settings.sectionPackaging = {};
+  settings.sectionPackaging["section-5"] = collectPlugPackaging();
+  settings.faqItems = collectFAQ();
+  settings.theme = collectTheme();
+  settings.background = collectBackground();
+  settings.deal = collectDeal();
+  return settings;
+}
+
+async function saveSettings() {
+  collectSettingsFromFields();
+  if (draftMode) {
+    persistDraft();
+    toast("Settings saved to draft");
+    return true;
+  }
+  const { error } = await db
+    .from("site_settings")
+    .upsert({ id: "main", data: settings, updated_at: new Date().toISOString() });
+  if (error) {
+    toast(error.message);
+    return false;
+  }
+  toast("Settings saved");
+  return true;
+}
+
+function openProduct(id = null) {
+  editingId = id;
+  const product = products.find(item => item.id === id) || {
+    name: "",
+    price: "",
+    cat: sections[0]?.id || "other",
+    tag: sections[0]?.title || "",
+    description: "",
+    image_url: "",
+    mark: "L",
+    flavors: "",
+    flavor_stock: {},
+    active: true,
+    sold_out: false,
+    sort_order: products.length + 1
+  };
+  $("product-modal-title").textContent = id ? "Edit Product" : "Add Product";
+  $("p-name").value = product.name || "";
+  $("p-price").value = product.price || "";
+  renderCategoryOptions(product.cat);
+  $("p-tag").value = product.tag || "";
+  $("p-desc").value = product.description || "";
+  $("p-image").value = product.image_url || "";
+  $("p-mark").value = product.mark || "";
+  $("p-flavors").value = product.flavors || "";
+  renderFlavorStockEditor(product.flavor_stock);
+  $("p-stock").value = product.stock != null ? product.stock : "";
+  $("p-sort").value = Number(product.sort_order) || products.length + 1;
+  $("p-active").checked = product.active !== false;
+  $("p-soldout").checked = product.sold_out === true;
+  $("product-delete").classList.toggle("hidden", !id);
+  $("product-duplicate").classList.toggle("hidden", !id);
+  $("product-modal").classList.add("open");
+}
+
+function closeProductModal() {
+  $("product-modal").classList.remove("open");
+  $("p-file").value = "";
+}
+
+async function uploadImage(file) {
+  if (!file) return "";
+  if (imageUploadProvider() === "Cloudinary") return uploadCloudinaryImage(file);
+  return uploadSupabaseImage(file);
+}
+
+async function uploadCloudinaryImage(file) {
+  const cloudName = liveInputValue(cfg.cloudinaryCloudName);
+  const uploadPreset = liveInputValue(cfg.cloudinaryUploadPreset);
+  const form = new FormData();
+  form.append("file", file);
+  form.append("upload_preset", uploadPreset);
+  if (hasLiveConfig(cfg.cloudinaryFolder)) form.append("folder", liveInputValue(cfg.cloudinaryFolder));
+  const response = await fetch(`https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudName)}/image/upload`, {
+    method: "POST",
+    body: form
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error?.message || "Cloudinary upload failed");
+  return data.secure_url;
+}
+
+async function uploadSupabaseImage(file) {
+  const safeName = file.name.toLowerCase().replace(/[^a-z0-9.]+/g, "-").replace(/^-+|-+$/g, "");
+  const path = `${Date.now()}-${safeName || "product-image"}`;
+  const { error } = await db.storage.from("product-images").upload(path, file, {
+    cacheControl: "31536000",
+    contentType: file.type || "image/jpeg",
+    upsert: false
+  });
+  if (error) throw error;
+  const { data } = db.storage.from("product-images").getPublicUrl(path);
+  return data.publicUrl;
+}
+
+function collectProductRow() {
+  const flavor_stock = collectFlavorStock();
+  const flavorStockValues = Object.values(flavor_stock);
+  const rawStock = $("p-stock").value.trim();
+  const stock = flavorStockValues.length
+    ? flavorStockValues.reduce((sum, value) => sum + value, 0)
+    : rawStock === "" ? null : Math.max(0, Math.floor(Number(rawStock) || 0));
+  return {
+    name: $("p-name").value.trim(),
+    price: $("p-price").value.trim(),
+    cat: $("p-cat").value,
+    tag: $("p-tag").value.trim() || sectionTitle($("p-cat").value),
+    description: $("p-desc").value.trim(),
+    image_url: $("p-image").value.trim(),
+    mark: ($("p-mark").value.trim() || "L").slice(0, 6),
+    flavors: $("p-flavors").value.trim(),
+    flavor_stock,
+    stock,
+    active: $("p-active").checked,
+    sold_out: $("p-soldout").checked || stock === 0,
+    sort_order: Number($("p-sort").value) || products.length + 1
+  };
+}
+
+async function saveProduct() {
+  const file = $("p-file").files[0];
+  let row = collectProductRow();
+  if (!row.name) {
+    toast("Product name is required");
+    return;
+  }
+  try {
+    if (file) {
+      toast("Uploading image...");
+      const uploadedUrl = await uploadImage(file);
+      console.log("[saveProduct] image upload result:", uploadedUrl);
+      if (!uploadedUrl) {
+        toast("Image upload returned empty — check Cloudinary config");
+        return;
+      }
+      row.image_url = uploadedUrl;
+      $("p-image").value = uploadedUrl;
+      toast("Image uploaded: " + uploadedUrl.slice(0, 60) + "...");
+    }
+    if (draftMode) {
+      if (editingId) {
+        const idx = products.findIndex(p => String(p.id) === String(editingId));
+        if (idx !== -1) products[idx] = { ...products[idx], ...row };
+      } else {
+        products.push({ id: "draft-" + Date.now(), ...row });
+      }
+      persistDraft();
+      closeProductModal();
+      await loadAll();
+      toast("Product saved to draft ✓");
+      return;
+    }
+    console.log("[saveProduct] saving row to Supabase:", JSON.stringify(row));
+    const result = editingId
+      ? await db.from("products").update(row).eq("id", editingId)
+      : await db.from("products").insert(row);
+    console.log("[saveProduct] Supabase result:", result);
+    if (result.error) throw result.error;
+    closeProductModal();
+    await loadAll();
+    toast("Product saved ✓");
+  } catch (error) {
+    console.error("[saveProduct] error:", error);
+    toast("Error: " + (error.message || String(error)));
+  }
+}
+
+async function deleteProduct() {
+  if (!editingId || !confirm("Delete this product?")) return;
+  if (draftMode) {
+    products = products.filter(p => String(p.id) !== String(editingId));
+    persistDraft();
+    closeProductModal();
+    await loadAll();
+    toast("Product deleted from draft");
+    return;
+  }
+  const { error } = await db.from("products").delete().eq("id", editingId);
+  if (error) {
+    toast(error.message);
+    return;
+  }
+  closeProductModal();
+  await loadAll();
+  toast("Product deleted");
+}
+
+async function duplicateProduct(id = editingId) {
+  const product = products.find(item => item.id === id);
+  if (!product) return;
+  const copy = {
+    name: `${product.name} Copy`,
+    price: product.price,
+    cat: product.cat,
+    tag: product.tag,
+    description: product.description,
+    image_url: product.image_url,
+    mark: product.mark,
+    flavors: product.flavors,
+    flavor_stock: normalizeFlavorStock(product.flavor_stock),
+    stock: product.stock,
+    active: false,
+    sold_out: product.sold_out,
+    sort_order: products.length + 1
+  };
+  if (draftMode) {
+    products.push({ id: "draft-" + Date.now(), ...copy });
+    persistDraft();
+    await loadAll();
+    toast("Product duplicated as hidden (draft)");
+    return;
+  }
+  const { error } = await db.from("products").insert(copy);
+  if (error) {
+    toast(error.message);
+    return;
+  }
+  await loadAll();
+  toast("Product duplicated as hidden");
+}
+
+function optionImageUpload(input, targetId) {
+  const file = input.files[0];
+  if (!file) return;
+  const row = input.closest(".packaging-row");
+  const note = row?.querySelector("[data-upload-note]");
+  if (note) note.textContent = "Uploading...";
+  uploadImage(file).then(url => {
+    document.getElementById(targetId).value = url;
+    if (note) note.textContent = "Uploaded. Save Options to publish.";
+    toast("Image uploaded");
+    updateOptionsPreview();
+  }).catch(error => toast(error.message));
+}
+
+function renderPackaging() {
+  const packaging = settings.packagingOptions || [];
+  const shipping = settings.shippingOptions || [];
+  $("packaging-list").innerHTML = packaging.map((item, index) => packagingRow(item, index)).join("") || `<p class="muted">No packaging options yet.</p>`;
+  $("shipping-list").innerHTML = shipping.map((item, index) => shippingRow(item, index)).join("") || `<p class="muted">No shipping options. Shipping will hide in cart.</p>`;
+  renderPlugPackaging();
+  updateOptionsPreview();
+}
+
+function packagingRow(item, index) {
+  return `
+    <div class="editor-card packaging-row">
+      <div class="editor-head"><strong>Packaging ${index + 1}</strong><button class="btn mini danger" onclick="this.closest('.packaging-row').remove(); updateOptionsPreview()">Remove</button></div>
+      <div class="grid">
+        <div class="field"><label>Name</label><input data-pack-field="name" value="${escapeHTML(item.name)}" oninput="updateOptionsPreview()"></div>
+        <div class="field"><label>Mark</label><input data-pack-field="mark" value="${escapeHTML(item.mark || "")}" oninput="updateOptionsPreview()"></div>
+      </div>
+      <div class="field"><label>Note</label><input data-pack-field="note" value="${escapeHTML(item.note || "")}" oninput="updateOptionsPreview()"></div>
+      <div class="grid">
+        <div class="field"><label>Image URL</label><input id="pack-img-${index}" data-pack-field="image" value="${escapeHTML(item.image || "")}" oninput="updateOptionsPreview()"></div>
+        <div class="field">
+          <label>Upload Image</label>
+          <input type="file" accept="image/*" onchange="optionImageUpload(this, 'pack-img-${index}')">
+          <div class="muted" data-upload-note style="margin-top:.35rem">Choose a file, then save options.</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function shippingRow(item, index) {
+  return `
+    <div class="editor-card shipping-row">
+      <div class="editor-head"><strong>Shipping ${index + 1}</strong><button class="btn mini danger" onclick="this.closest('.shipping-row').remove(); updateOptionsPreview()">Remove</button></div>
+      <div class="grid">
+        <div class="field"><label>Destination / Match Terms</label><input data-ship-field="destination" value="${escapeHTML(item.destination || "")}" placeholder="e.g. United States, California, CA" oninput="syncShippingName(this); updateOptionsPreview()"></div>
+        <div class="field"><label>Name</label><input data-ship-field="name" value="${escapeHTML(item.name || item.destination || "")}" oninput="this.dataset.touched='1'; updateOptionsPreview()"></div>
+        <div class="field"><label>Price</label><input data-ship-field="price" value="${escapeHTML(item.price || "")}" oninput="updateOptionsPreview()"></div>
+      </div>
+      <div class="field"><label>Note</label><input data-ship-field="note" value="${escapeHTML(item.note || "")}" oninput="updateOptionsPreview()"></div>
+    </div>`;
+}
+
+function addPackaging() {
+  settings.packagingOptions = collectPackaging();
+  settings.packagingOptions.push({ name: "New Packaging", note: "", image: "", mark: "BOX" });
+  renderPackaging();
+}
+
+function renderPlugPackaging() {
+  const sp = settings.sectionPackaging || {};
+  const plugOpts = sp["section-5"] || [];
+  $("plug-packaging-list").innerHTML = plugOpts.map((item, index) => plugPackagingRow(item, index)).join("")
+    || `<p class="muted" style="margin-bottom:.75rem">No plug packaging yet — click Add above.</p>`;
+}
+
+function plugPackagingRow(item, index) {
+  return `
+    <div class="editor-card plug-packaging-row">
+      <div class="editor-head"><strong>Plug Packaging ${index + 1}</strong><button class="btn mini danger" onclick="this.closest('.plug-packaging-row').remove(); updateOptionsPreview()">Remove</button></div>
+      <div class="grid">
+        <div class="field"><label>Name</label><input data-plug-pack-field="name" value="${escapeHTML(item.name)}" oninput="updateOptionsPreview()"></div>
+        <div class="field"><label>Mark</label><input data-plug-pack-field="mark" value="${escapeHTML(item.mark || "")}" oninput="updateOptionsPreview()"></div>
+      </div>
+      <div class="field"><label>Note</label><input data-plug-pack-field="note" value="${escapeHTML(item.note || "")}" oninput="updateOptionsPreview()"></div>
+      <div class="grid">
+        <div class="field"><label>Image URL</label><input id="plug-pack-img-${index}" data-plug-pack-field="image" value="${escapeHTML(item.image || "")}" oninput="updateOptionsPreview()"></div>
+        <div class="field">
+          <label>Upload Image</label>
+          <input type="file" accept="image/*" onchange="optionImageUpload(this, 'plug-pack-img-${index}')">
+          <div class="muted" data-upload-note style="margin-top:.35rem">Choose a file, then save options.</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function addPlugPackaging() {
+  if (!settings.sectionPackaging) settings.sectionPackaging = {};
+  settings.sectionPackaging["section-5"] = collectPlugPackaging();
+  settings.sectionPackaging["section-5"].push({ name: "New Plug Packaging", note: "", image: "", mark: "PLUG" });
+  renderPlugPackaging();
+}
+
+function collectPlugPackaging() {
+  return $$(".plug-packaging-row").map(row => ({
+    name: row.querySelector('[data-plug-pack-field="name"]').value.trim(),
+    note: row.querySelector('[data-plug-pack-field="note"]').value.trim(),
+    image: row.querySelector('[data-plug-pack-field="image"]').value.trim(),
+    mark: row.querySelector('[data-plug-pack-field="mark"]').value.trim()
+  })).filter(item => item.name);
+}
+
+function addShipping() {
+  settings.shippingOptions = collectShipping();
+  settings.shippingOptions.push({ destination: "New Destination", name: "New Destination", price: "$0.00", note: "" });
+  renderPackaging();
+}
+
+function syncShippingName(input) {
+  const row = input.closest(".shipping-row");
+  const nameInput = row?.querySelector('[data-ship-field="name"]');
+  if (nameInput && !nameInput.dataset.touched) nameInput.value = input.value;
+}
+
+function collectPackaging() {
+  return $$(".packaging-row").map(row => ({
+    name: row.querySelector('[data-pack-field="name"]').value.trim(),
+    note: row.querySelector('[data-pack-field="note"]').value.trim(),
+    image: row.querySelector('[data-pack-field="image"]').value.trim(),
+    mark: row.querySelector('[data-pack-field="mark"]').value.trim()
+  })).filter(item => item.name);
+}
+
+function collectShipping() {
+  return $$(".shipping-row").map(row => ({
+    destination: row.querySelector('[data-ship-field="destination"]')?.value.trim() || "",
+    name: row.querySelector('[data-ship-field="name"]').value.trim(),
+    price: row.querySelector('[data-ship-field="price"]').value.trim(),
+    note: row.querySelector('[data-ship-field="note"]').value.trim()
+  })).map(item => ({ ...item, name: item.name || item.destination }))
+    .filter(item => item.name);
+}
+
+function updateOptionsPreview() {
+  const packaging = collectPackaging();
+  const shipping = collectShipping();
+  $("options-preview").innerHTML = `
+    <div class="editor-card"><strong>Packaging</strong><div class="badge-row">${packaging.map(item => `<span class="badge">${escapeHTML(item.name)}</span>`).join("") || `<span class="muted">None</span>`}</div></div>
+    <div class="editor-card"><strong>Shipping</strong><div class="badge-row">${shipping.map(item => `<span class="badge">${escapeHTML(item.name)} ${escapeHTML(item.price || "")}</span>`).join("") || `<span class="muted">Hidden</span>`}</div></div>`;
+}
+
+function renderFAQ() {
+  const items = settings.faqItems || [];
+  $("faq-list").innerHTML = items.map((item, index) => faqRow(item, index)).join("") || `<p class="muted">No FAQ items yet.</p>`;
+  updateFAQPreview();
+}
+
+function faqRow(item, index) {
+  return `
+    <div class="editor-card faq-row">
+      <div class="editor-head"><strong>FAQ ${index + 1}</strong><button class="btn mini danger" onclick="this.closest('.faq-row').remove(); updateFAQPreview()">Remove</button></div>
+      <div class="field"><label>Question</label><input data-faq-field="question" value="${escapeHTML(item.question || "")}" oninput="updateFAQPreview()"></div>
+      <div class="field"><label>Answer</label><textarea data-faq-field="answer" oninput="updateFAQPreview()">${escapeHTML(item.answer || "")}</textarea></div>
+    </div>`;
+}
+
+function addFAQ() {
+  settings.faqItems = collectFAQ();
+  settings.faqItems.push({ question: "New question", answer: "" });
+  renderFAQ();
+}
+
+function collectFAQ() {
+  return $$(".faq-row").map(row => ({
+    question: row.querySelector('[data-faq-field="question"]').value.trim(),
+    answer: row.querySelector('[data-faq-field="answer"]').value.trim()
+  })).filter(item => item.question || item.answer);
+}
+
+function updateFAQPreview() {
+  const items = collectFAQ();
+  $("faq-preview").innerHTML = items.map(item => `
+    <details class="editor-card">
+      <summary>${escapeHTML(item.question || "Question")}</summary>
+      <p class="muted">${escapeHTML(item.answer || "Answer")}</p>
+    </details>`).join("") || `<p class="muted">FAQ hidden when empty.</p>`;
+}
+
+function renderTheme() {
+  const theme = deepMerge(DEFAULT_SETTINGS.theme, settings.theme || {});
+  $("t-accent").value = theme.accent;
+  $("t-text").value = theme.siteText;
+  $("t-nav-bg").value = theme.navBg;
+  $("t-banner-bg").value = theme.bannerBg;
+  $("t-card-bg").value = theme.cardBg;
+  $("t-cart-bg").value = theme.cartBg;
+  $("t-btn-bg").value = theme.btnBg;
+  $("t-btn-text").value = theme.btnText;
+  $("t-menu-cols").value = theme.menuCols;
+  $("t-label-blur").value = theme.labelBlur;
+  updateThemePreview();
+}
+
+function collectTheme() {
+  return {
+    accent: $("t-accent").value,
+    siteText: $("t-text").value,
+    navBg: $("t-nav-bg").value,
+    bannerBg: $("t-banner-bg").value,
+    cardBg: $("t-card-bg").value,
+    cartBg: $("t-cart-bg").value,
+    btnBg: $("t-btn-bg").value,
+    btnText: $("t-btn-text").value,
+    menuCols: Number($("t-menu-cols").value) || 3,
+    labelBlur: Number($("t-label-blur").value) || 0
+  };
+}
+
+function updateThemePreview() {
+  const theme = collectTheme();
+  $("theme-prev-banner").style.background = theme.bannerBg;
+  $("theme-prev-card").style.background = theme.cardBg;
+  $("theme-prev-text").style.color = theme.siteText;
+  $("theme-prev-btn").style.background = theme.btnBg;
+  $("theme-prev-btn").style.color = theme.btnText;
+}
+
+function renderBackground() {
+  const bg = deepMerge(DEFAULT_SETTINGS.background, settings.background || {});
+  $("bg-top").value = bg.top;
+  $("bg-mid").value = bg.mid;
+  $("bg-bottom").value = bg.bottom;
+  $("bg-tint").value = bg.tint;
+  $("bg-star-1").value = bg.starColors?.[0] || "#ffffff";
+  $("bg-star-2").value = bg.starColors?.[1] || "#ff2d55";
+  $("bg-star-3").value = bg.starColors?.[2] || "#396dff";
+  $("bg-star-4").value = bg.starColors?.[3] || "#8a3ffc";
+  $("bg-density").value = bg.starDensity || 900;
+  $("bg-line-distance").value = bg.lineDistance || 124;
+  $("bg-twinkle").value = bg.starTwinkle ?? bg.twinkle ?? .85;
+  $("bg-cursor").value = bg.cursorBoost || 7;
+}
+
+function collectBackground() {
+  const existing = settings.background || DEFAULT_SETTINGS.background;
+  return {
+    top: $("bg-top").value || existing.top,
+    mid: $("bg-mid").value || existing.mid,
+    bottom: $("bg-bottom").value || existing.bottom,
+    tint: $("bg-tint").value || existing.tint,
+    tintOpacity: existing.tintOpacity,
+    speed: existing.speed,
+    starColors: [$("bg-star-1").value, $("bg-star-2").value, $("bg-star-3").value, $("bg-star-4").value],
+    starDensity: Number($("bg-density").value) || existing.starDensity,
+    starAlphaMin: existing.starAlphaMin,
+    starAlphaMax: existing.starAlphaMax,
+    starTwinkle: Number($("bg-twinkle").value) || existing.starTwinkle,
+    cursorBoost: Number($("bg-cursor").value) || existing.cursorBoost,
+    starSizeMin: existing.starSizeMin,
+    starSizeMax: existing.starSizeMax,
+    starCursorRadius: existing.starCursorRadius,
+    starGlow: existing.starGlow,
+    lineDistance: Number($("bg-line-distance").value) || existing.lineDistance,
+    lineCursor: existing.lineCursor,
+    lineMax: existing.lineMax,
+    lineOpacity: existing.lineOpacity,
+    lineWidth: existing.lineWidth,
+    lineNeighbor: existing.lineNeighbor
+  };
+}
+
+function resetBackground() {
+  settings.background = clone(DEFAULT_SETTINGS.background);
+  renderBackground();
+  toast("Background reset locally. Save to publish it.");
+}
+
+function renderDeal() {
+  const deal = settings.deal || {};
+  $("deal-enabled").checked = deal.enabled === true;
+  $("deal-label").value = deal.label || "24HR DEAL";
+  renderDealProductOptions(deal.productId || "");
+  $("deal-original-price").value = deal.originalPrice || "";
+  $("deal-price").value = deal.dealPrice || "";
+  if (deal.expiresAt) {
+    const d = new Date(deal.expiresAt);
+    $("deal-expires-at").value = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+  } else {
+    $("deal-expires-at").value = "";
+  }
+  updateDealPreview();
+}
+
+function renderDealProductOptions(selectedId) {
+  const sel = $("deal-product-id");
+  sel.innerHTML = `<option value="">— no product —</option>` +
+    products.map(p => `<option value="${p.id}"${String(p.id) === String(selectedId) ? " selected" : ""}>${clean(p.name)} (${clean(p.price || "")})</option>`).join("");
+}
+
+function onDealProductChange() {
+  const pId = $("deal-product-id").value;
+  const product = products.find(p => String(p.id) === String(pId));
+  if (product && !$("deal-original-price").value) {
+    $("deal-original-price").value = product.price || "";
+  }
+  updateDealPreview();
+}
+
+function setDeal24h() {
+  const exp = new Date(Date.now() + 24 * 3600 * 1000);
+  $("deal-expires-at").value = new Date(exp.getTime() - exp.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+  updateDealPreview();
+}
+
+function updateDealPreview() {
+  const label = fieldValue("deal-label") || "24HR DEAL";
+  const pId = $("deal-product-id").value;
+  const product = products.find(p => String(p.id) === String(pId));
+  const orig = fieldValue("deal-original-price") || (product ? (product.price || "") : "");
+  const price = fieldValue("deal-price");
+  const expVal = $("deal-expires-at").value;
+  $("deal-prev-label").textContent = label;
+  $("deal-prev-name").textContent = product ? product.name : "—";
+  $("deal-prev-orig").textContent = orig;
+  $("deal-prev-price").textContent = price;
+  $("deal-prev-expiry").textContent = expVal
+    ? "Expires " + new Date(expVal).toLocaleString()
+    : "No expiry set";
+}
+
+function collectDeal() {
+  const pId = $("deal-product-id").value;
+  const product = products.find(p => String(p.id) === String(pId));
+  const expVal = $("deal-expires-at").value;
+  return {
+    enabled: $("deal-enabled").checked,
+    label: fieldValue("deal-label") || "24HR DEAL",
+    productId: pId || "",
+    productName: product ? (product.name || "") : "",
+    originalPrice: fieldValue("deal-original-price"),
+    dealPrice: fieldValue("deal-price"),
+    expiresAt: expVal ? new Date(expVal).toISOString() : ""
+  };
+}
+
+function renderAnalytics() {
+  let data = {};
+  try {
+    data = JSON.parse(localStorage.getItem("lvsh_analytics_v1") || "{}");
+  } catch (error) {
+    data = {};
+  }
+  const events = Array.isArray(data.events) ? data.events : [];
+  $("analytics-metrics").innerHTML = [
+    ["Events", events.length],
+    ["Product Views", events.filter(e => String(e.type || "").includes("product")).length],
+    ["Cart Events", events.filter(e => String(e.type || "").includes("cart")).length],
+    ["Checkout Events", events.filter(e => String(e.type || "").includes("checkout")).length]
+  ].map(([label, value]) => `<div class="metric"><div class="sub">${label}</div><strong>${value}</strong></div>`).join("");
+  $("analytics-events").innerHTML = events.slice(-20).reverse().map(event => `
+    <div class="editor-card">
+      <strong>${escapeHTML(event.type || "event")}</strong>
+      <p class="muted">${escapeHTML(new Date(event.ts || Date.now()).toLocaleString())}</p>
+    </div>`).join("") || `<p class="muted">No local analytics events found in this browser.</p>`;
+}
+
+async function exportBackup() {
+  collectSettingsFromFields();
+  const backup = {
+    exportedAt: new Date().toISOString(),
+    settings,
+    sections,
+    products
+  };
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `lavish-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast("Backup downloaded");
+}
+
+async function importBackup(file) {
+  if (!file) return;
+  const text = await file.text();
+  const backup = JSON.parse(text);
+  if (!backup.settings || !Array.isArray(backup.sections) || !Array.isArray(backup.products)) {
+    toast("Backup file is not valid");
+    return;
+  }
+  if (!confirm("Import this backup? This will overwrite products, sections, and site settings.")) return;
+  if (!confirm("Last check: this changes your live Supabase data. Continue?")) return;
+  await db.from("site_settings").upsert({ id: "main", data: backup.settings, updated_at: new Date().toISOString() });
+  await db.from("products").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+  await db.from("menu_sections").delete().neq("id", "__never__");
+  if (backup.sections.length) await db.from("menu_sections").upsert(backup.sections);
+  if (backup.products.length) {
+    const rows = backup.products.map(({ id, ...row }) => row);
+    await db.from("products").insert(rows);
+  }
+  await loadAll();
+  toast("Backup imported");
+}
+
+$$("[data-save]").forEach(button => button.addEventListener("click", async () => {
+  if (button.dataset.save === "all") {
+    if (await saveSettings()) await saveSections();
+    return;
+  }
+  await saveSettings();
+}));
+renderUploadProviderNote();
+$("tabs").addEventListener("click", event => {
+  const tab = event.target.closest(".tab");
+  if (tab) switchTab(tab.dataset.tab);
+});
+$("login-btn").addEventListener("click", login);
+$("password").addEventListener("keydown", event => { if (event.key === "Enter") login(); });
+$("signout-btn").addEventListener("click", signOut);
+$("refresh-btn").addEventListener("click", loadAll);
+$("quick-add-btn").addEventListener("click", () => openProduct());
+$("p-flavors").addEventListener("input", () => renderFlavorStockEditor(collectFlavorStock()));
+$("product-close").addEventListener("click", closeProductModal);
+$("product-save").addEventListener("click", saveProduct);
+$("product-delete").addEventListener("click", deleteProduct);
+$("product-duplicate").addEventListener("click", () => duplicateProduct());
+$("upload-now").addEventListener("click", async () => {
+  const note = $("upload-provider-note");
+  try {
+    if (note) note.textContent = "Uploading to Cloudinary...";
+    const url = await uploadImage($("p-file").files[0]);
+    if (url) {
+      $("p-image").value = url;
+      if (note) note.textContent = "Uploaded to Cloudinary. Save Product to publish.";
+      toast("Image uploaded");
+    } else if (note) {
+      note.textContent = "Choose an image file first.";
+    }
+  } catch (error) {
+    if (note) note.textContent = error.message || "Upload failed";
+    toast(error.message);
+  }
+});
+$("import-file").addEventListener("change", event => importBackup(event.target.files[0]));
+["s-name","s-announcement","s-feature-title","s-feature-text"].forEach(id => $(id).addEventListener("input", updateSitePreview));
+["h-kicker","h-title","h-sub","h-btn1","h-btn2","h-note"].forEach(id => $(id).addEventListener("input", updateHeroPreview));
+["t-accent","t-text","t-nav-bg","t-banner-bg","t-card-bg","t-cart-bg","t-btn-bg","t-btn-text","t-menu-cols","t-label-blur"].forEach(id => $(id).addEventListener("input", updateThemePreview));
+
+requireSession().catch(error => {
+  $("login-note").textContent = error.message;
+});
+</script>
+</body>
+</html>

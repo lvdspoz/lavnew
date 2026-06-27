@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAVISH</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&amp;family=DM+Sans:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+  background: #000;
+}
+body {
+  background: #000;
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+::selection {
+  background: rgba(255,255,255,.14);
+}
+#stars {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: #000;
+}
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% -30%, rgba(255,255,255,.038), transparent 44%),
+    radial-gradient(ellipse at 50% 120%, rgba(255,255,255,.018), transparent 54%);
+  opacity: .55;
+}
+.noise {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: .022;
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.86' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.42'/%3E%3C/svg%3E");
+}
+.page {
+  position: relative;
+  z-index: 2;
+}
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.15rem 1.75rem;
+  border-bottom: 1px solid rgba(255,255,255,.055);
+  background: rgba(0,0,0,.54);
+  backdrop-filter: blur(16px);
+}
+.logo {
+  font-family: 'Cinzel', serif;
+  font-size: 1.35rem;
+  letter-spacing: .34em;
+  font-weight: 400;
+  color: rgba(255,255,255,.84);
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2.6rem;
+}
+.nav-links a {
+  font-size: .68rem;
+  letter-spacing: .29em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.54);
+  transition: color .2s ease, border-color .2s ease;
+}
+.nav-links a:hover {
+  color: rgba(255,255,255,.88);
+}
+.nav-order {
+  border: 1px solid rgba(255,255,255,.15);
+  padding: .74rem 1rem;
+  background: rgba(0,0,0,.24);
+}
+.hero {
+  position: relative;
+  min-height: 92vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8rem 1.5rem 5rem;
+  text-align: center;
+}
+.hero-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 1120px;
+  width: 100%;
+}
+.hero-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(4.1rem, 11.5vw, 10.2rem);
+  letter-spacing: .28em;
+  font-weight: 400;
+  transform: translateX(.14em);
+  color: rgba(255,255,255,.86);
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.10),
+    0 18px 44px rgba(0,0,0,.92);
+}
+.hero-line {
+  width: min(390px, 62vw);
+  height: 1px;
+  margin: 1.35rem auto 1.5rem;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.24), transparent);
+}
+.hero-sub {
+  font-size: .70rem;
+  letter-spacing: .46em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.39);
+  margin-bottom: 2.65rem;
+}
+.hero-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.45rem;
+}
+.hero-btn {
+  width: 315px;
+  height: 78px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.52);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  font-size: .84rem;
+  letter-spacing: .42em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.72);
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform .25s ease,
+    border-color .25s ease,
+    background .25s ease,
+    color .25s ease;
+}
+.hero-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -125%;
+  width: 84%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent);
+  transform: skewX(-18deg);
+  transition: left .55s ease;
+}
+.hero-btn:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,.34);
+  background: rgba(8,8,8,.76);
+  color: rgba(255,255,255,.9);
+}
+.hero-btn:hover::before {
+  left: 140%;
+}
+.hero-btn span {
+  font-size: 1.22rem;
+  opacity: .68;
+}
+.hero-note {
+  margin-top: 2rem;
+  font-size: .66rem;
+  letter-spacing: .35em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.27);
+}
+.menu {
+  position: relative;
+  padding: 5.8rem 1.5rem 8rem;
+  border-top: 1px solid rgba(255,255,255,.055);
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,.06), rgba(0,0,0,.34) 55%, rgba(0,0,0,.16));
+  overflow: hidden;
+}
+.menu::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.015), transparent 42%),
+    radial-gradient(ellipse at 20% 65%, rgba(255,255,255,.010), transparent 28%),
+    radial-gradient(ellipse at 82% 70%, rgba(255,255,255,.010), transparent 30%);
+  pointer-events: none;
+}
+.menu-head {
+  position: relative;
+  max-width: 1180px;
+  margin: 0 auto 3.2rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  align-items: end;
+  border-bottom: 1px solid rgba(255,255,255,.085);
+  padding-bottom: 1.45rem;
+}
+.section-kicker {
+  font-size: .66rem;
+  letter-spacing: .36em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.31);
+  margin-bottom: .65rem;
+}
+.menu-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(2.2rem, 5vw, 4.2rem);
+  letter-spacing: .2em;
+  font-weight: 400;
+  color: rgba(255,255,255,.84);
+}
+.category-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .72rem;
+  justify-content: flex-end;
+}
+.category-nav a {
+  border: 1px solid rgba(255,255,255,.12);
+  padding: .72rem .92rem;
+  font-size: .66rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.48);
+  background: rgba(0,0,0,.38);
+  backdrop-filter: blur(8px);
+  transition: .22s ease;
+  white-space: nowrap;
+}
+.category-nav a:hover {
+  border-color: rgba(255,255,255,.30);
+  color: rgba(255,255,255,.82);
+  background: rgba(8,8,8,.72);
+}
+.menu-wrap {
+  position: relative;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+.menu-section {
+  padding: 3.8rem 0 4.8rem;
+  border-bottom: 1px solid rgba(255,255,255,.065);
+  scroll-margin-top: 110px;
+}
+.menu-section:last-child {
+  border-bottom: none;
+}
+.menu-section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2.25rem;
+}
+.menu-section-title h3 {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.35rem, 3.7vw, 1.95rem);
+  letter-spacing: .16em;
+  font-weight: 400;
+  color: rgba(255,255,255,.86);
+  overflow-wrap: anywhere;
+}
+.menu-section-title span {
+  font-size: .64rem;
+  letter-spacing: .34em;
+  color: rgba(255,255,255,.28);
+  text-transform: uppercase;
+}
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.15rem;
+}
+.product-card {
+  min-height: 520px;
+  border: 1px solid rgba(255,255,255,.105);
+  background: rgba(4,4,4,.72);
+  backdrop-filter: blur(5px);
+  overflow: hidden;
+  transition: .25s ease;
+}
+.product-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255,255,255,.27);
+  background: rgba(10,10,10,.82);
+}
+.product-image {
+  height: 315px;
+  border-bottom: 1px solid rgba(255,255,255,.075);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,.055), transparent 42%),
+    rgba(255,255,255,.018);
+  overflow: hidden;
+}
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  padding: 1.05rem;
+}
+.product-emoji {
+  font-size: 5.8rem;
+  filter: drop-shadow(0 18px 35px rgba(255,255,255,.07));
+  transition: .25s ease;
+}
+.product-card:hover .product-emoji {
+  transform: scale(1.05) translateY(-2px);
+}
+.product-body {
+  padding: 1.45rem;
+}
+.product-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+  margin-bottom: .8rem;
+}
+.product-name {
+  font-size: 1.05rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.84);
+  line-height: 1.35;
+}
+.product-price {
+  font-family: 'Cinzel', serif;
+  font-size: 1.28rem;
+  letter-spacing: .08em;
+  color: rgba(255,255,255,.82);
+  white-space: nowrap;
+}
+.product-desc {
+  color: rgba(255,255,255,.4);
+  line-height: 1.65;
+  font-size: .9rem;
+  margin-bottom: 1.35rem;
+}
+.product-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+.product-tag {
+  font-size: .62rem;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.28);
+}
+.order-small {
+  border: 1px solid rgba(255,255,255,.13);
+  padding: .65rem 1rem;
+  font-size: .66rem;
+  letter-spacing: .19em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.56);
+  background: rgba(0,0,0,.25);
+}
+.order-small:hover {
+  border-color: rgba(255,255,255,.30);
+  color: rgba(255,255,255,.86);
+}
+.footer {
+  position: relative;
+  z-index: 2;
+  border-top: 1px solid rgba(255,255,255,.055);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  color: rgba(255,255,255,.28);
+  font-size: .66rem;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  background: rgba(0,0,0,.74);
+}
+@media (max-width: 850px) {
+  .nav { padding: 1rem; }
+  .nav-links { display: none; }
+  .hero { min-height: 88vh; }
+  .hero-title { font-size: 3.65rem; letter-spacing: .18em; }
+  .hero-sub { font-size: .61rem; letter-spacing: .25em; line-height: 1.8; }
+  .hero-buttons { flex-direction: column; align-items: center; gap: 1rem; }
+  .hero-btn { width: 86vw; height: 74px; font-size: .74rem; letter-spacing: .28em; }
+  .menu { padding-top: 5rem; }
+  .menu-head { display: block; }
+  .category-nav { justify-content: flex-start; margin-top: 1.5rem; }
+  .menu-section-title { display: block; }
+  .menu-section-title span { display: block; margin-top: .7rem; }
+  .product-grid { grid-template-columns: 1fr; }
+  .product-card { min-height: auto; }
+  .product-image { height: 260px; }
+}
+</style>
+</head>
+<body><script type="application/json" id="lvsh-site-config">{"settings":{"name":"LAVISH","orderLink":"PUT_ORDER_LINK_HERE","supportLink":"PUT_SUPPORT_LINK_HERE","discordUsername":"","announcement":"","cartNote":"Checkout opens your off-site payment link.","checkoutButtonText":"Checkout","labelBlur":3.5,"suggestBoxEnabled":false,"suggestBoxLabel":"Recommend a brand","background":{"top":"#050102","mid":"#020101","bottom":"#010101","tint":"#781822","tintOpacity":0.006,"speed":0.000155,"starDensity":900,"starColors":["#e02535","#d4006e","#1a35e0","#8020e0"],"starAlphaMin":0.4,"starAlphaMax":0.85,"starTwinkle":0.85,"cursorBoost":7,"starSizeMin":0.55,"starSizeMax":1.8,"starCursorRadius":41,"starGlow":5,"lineDistance":124,"lineCursor":35,"lineMax":2,"lineOpacity":0.6,"lineWidth":1,"lineNeighbor":1.12},"faqItems":[{"question":"How do I order?","answer":"Add your items to the cart, review the order details, then use checkout to open the saved payment or support link."},{"question":"Can I choose packaging?","answer":"Yes. When packaging options are enabled in admin, the cart lets you pick one and the preview changes with your choice."},{"question":"How does shipping work?","answer":"Shipping options only appear when you add them in admin. Leaving shipping blank removes the shipping area from the cart."},{"question":"Who can order?","answer":"Customers should follow all local rules and age requirements before placing any order."}]},"hero":{"kicker":"Limited drops / private stock","title":"LAVISH","sub":"Premium candy. Low-volume releases. Clean finish.","btn1":"Menu","btn2":"Order Lavish","note":"Payments are handled off-site"},"advanced":{"displayFont":"Cinzel","bodyFont":"DM Sans","gridCols":3,"instagram":"","tiktok":"","twitter":"","customCss":""},"checkout":{"bg":"#070407","accent":"#c9142f","card":"#160c10","btn":"#c9142f","text":"#f6eded","muted":"#b99da4","receiptBg":"#050304","border":"#1e1218"},"products":[{"id":1,"name":"Skittles","price":"$24.99","cat":"yarts","tag":"Yarts","desc":"Muha 3rd gen","image":"assets/products/skittles-muha.png","mark":"S","flavors":"Blueberry Haze, Watermelon Zkittlez, Pineapple Express, Mango Madness, Strawberry Runtz, Grape Ape, Banana Kush, Sour Diesel, Apple Gelato, Wedding Cake","active":true,"soldOut":false,"sortOrder":1},{"id":2,"name":"Jolly Ranchers","price":"$24.99","cat":"yarts","tag":"Yarts","desc":"MadLabs","image":"assets/products/jolly-ranchers-madlabs.png","mark":"J","flavors":"Blue Raspberry, Watermelon, Green Apple, Grape, Cherry, Strawberry, Peach Mango, Pineapple","active":true,"soldOut":false,"sortOrder":2},{"id":3,"name":"Caramel M&Ms","price":"$24.99","cat":"yarts","tag":"Yarts","desc":"Boutiq v5","image":"assets/products/caramel-mms-boutiq.png","mark":"C","flavors":"Wedding Cake, Gelato 41, Banana Runtz, Pineapple Express, Strawberry Cough, OG Kush, Blueberry Haze, Watermelon Zkittlez","active":true,"soldOut":false,"sortOrder":3},{"id":4,"name":"MikeAndIke","price":"$24.99","cat":"nicotine","tag":"Nicotine","desc":"Geek bar","image":"assets/products/mike-and-ike-geek.png","mark":"M","flavors":"Watermelon Ice, Blue Razz Ice, Strawberry Ice, Mango Ice, Peach Ice, Grape Ice, Lemon Ice, Kiwi Passionfruit Guava","active":true,"soldOut":false,"sortOrder":4},{"id":5,"name":"Hot Tamales","price":"$29.99","cat":"nicotine","tag":"Nicotine","desc":"Foger","image":"assets/products/hot-tamales-foger.png","mark":"H","flavors":"Strawberry Watermelon, Blueberry Lemon, Mango Peach, Pink Lemonade, Watermelon Ice, Grape Ice, Cherry Limeade","active":true,"soldOut":false,"sortOrder":5},{"id":6,"name":"Milk Duds","price":"$19.99","cat":"nicotine","tag":"Nicotine","desc":"Lost Mary","image":"assets/products/milk-duds-lost-mary.png","mark":"D","flavors":"Blueberry Ice, Strawberry Ice, Watermelon Ice, Mango Ice, Peach Ice, Grape Ice, Lychee Ice, Passion Fruit Ice","active":true,"soldOut":false,"sortOrder":6},{"id":7,"name":"Trolli Peach-Ring Gummies","price":"$29.99","cat":"eddies","tag":"Eddies","desc":"Edibles (10 calories x 10 gummies)","image":"assets/products/trolli-peach-rings.png","mark":"T","flavors":"Watermelon, Strawberry, Peach, Tropical Punch, Sour Apple, Blue Raspberry, Grape, Cherry","active":true,"soldOut":false,"sortOrder":7},{"id":1779764124919,"name":"Whoppers","price":"$29.99","cat":"flower-rosin","tag":"Flower/Rosin","desc":"Big Buds - 3.5g","image":"","mark":"W","flavors":"OG Kush, Gorilla Glue, Blue Dream, Purple Haze, Sour Diesel, Wedding Cake, Gelato, Runtz","active":true,"soldOut":false,"sortOrder":8},{"id":1779764190620,"name":"Swedish Fish","price":"$29.99","cat":"flower-rosin","tag":"Flower/Rosin","desc":"live-rosin-tier-3","image":"","mark":"S","flavors":"Strawberry, Tropical, Berry Blast, Lemon, Watermelon, Peach, Grape, Cherry","active":true,"soldOut":false,"sortOrder":9}],"menuSections":[{"id":"yarts","title":"Yarts","sub":"Nicotine","sortOrder":1,"aliases":["yarts","disposables-thc","gummies","gummy"]},{"id":"nicotine","title":"Disposables","sub":"Nicotine","sortOrder":2,"aliases":["nicotine","nic","disposables-nic","chocolate"]},{"id":"flower-rosin","title":"Flower/Rosin","sub":"thc","sortOrder":3,"aliases":["flower-rosin","flower","cannabis","rosin"]},{"id":"eddies","title":"Eddies","sub":"thc","sortOrder":4,"aliases":["eddies","edibles-thc","sour"]}]}</script><script type="application/json" id="lvsh-cart-config">{"packagingOptions":[{"name":"Nerds gummy clusters","image":"","note":"Filling included","mark":"NERD"},{"name":"Sour skittles","image":"","note":"Filling included","mark":"SOUR"},{"name":"Chips ahoy","image":"","note":"Filling included","mark":"COOKIE"}],"packaging":[{"name":"Nerds gummy clusters","image":"","note":"Filling included","mark":"NERD"},{"name":"Sour skittles","image":"","note":"Filling included","mark":"SOUR"},{"name":"Chips ahoy","image":"","note":"Filling included","mark":"COOKIE"}],"shippingOptions":[],"shipping":[]}</script>
+<canvas id="stars"></canvas>
+<div class="ambient"></div>
+<div class="noise"></div>
+<div class="page">
+  <nav class="nav">
+    <a class="logo" href="#top">LAVISH</a>
+    <div class="nav-links">
+      <a href="#menu">Menu</a>
+      <a href="PUT_ORDER_LINK_HERE" class="nav-order">Order</a>
+    </div>
+  </nav>
+  <section class="hero" id="top">
+    <div class="hero-inner">
+      <h1 class="hero-title">LAVISH</h1>
+      <div class="hero-line"></div>
+      <p class="hero-sub">Premium candy. Low-volume releases. Clean finish.</p>
+      <div class="hero-buttons">
+        <a class="hero-btn" href="#menu"><span>☰</span>Menu</a>
+        <a class="hero-btn" href="PUT_SUPPORT_LINK_HERE"><span>✈</span>Order Lavish</a>
+      </div>
+      <p class="hero-note">Payments are handled off-site</p>
+    </div>
+  </section>
+  <section class="menu" id="menu">
+    <div class="menu-head">
+      <div>
+        <p class="section-kicker">Current Drops</p>
+        <h2 class="menu-title">Menu</h2>
+      </div>
+      <div class="category-nav"><button type="button" class="category-filter active" data-section-filter="all">All</button><button type="button" class="category-filter" data-section-filter="yarts">Yarts</button><button type="button" class="category-filter" data-section-filter="nicotine">Disposables</button><button type="button" class="category-filter" data-section-filter="flower-rosin">Flower/Rosin</button><button type="button" class="category-filter" data-section-filter="eddies">Eddies</button></div>
+    </div>
+    <div class="menu-wrap">
+      <div class="menu-section" id="yarts">
+        <div class="menu-section-title">
+          <h3>Yarts</h3>
+          <span>Nicotine</span>
+        </div>
+
+        <div class="product-grid">
+
+          <div class="product-card">
+            <div class="product-image"><button class="product-image-btn" onclick="showFlavorPopup(this)" data-name="Skittles" data-price="$24.99" data-tag="Yarts" data-img="assets/products/skittles-muha.png" data-mark="S" data-emoji="S" data-flavors="Blueberry Haze, Watermelon Zkittlez, Pineapple Express, Mango Madness, Strawberry Runtz, Grape Ape, Banana Kush, Sour Diesel, Apple Gelato, Wedding Cake"><img src="assets/products/skittles-muha.png" alt="Skittles"></button></div>
+            <div class="product-body">
+              <div class="product-top">
+                <h4 class="product-name">Skittles</h4>
+                <div class="product-price">$24.99</div>
+              </div>
+              <p class="product-desc">Muha 3rd gen</p>
+              <div class="product-bottom">
+                <span class="product-tag">Yarts</span>
+                <a class="order-small" href="PUT_ORDER_LINK_HERE">Order</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="product-card">
+            <div class="product-image"><button class="product-image-btn" onclick="showFlavorPopup(this)" data-name="Jolly Ranchers" data-price="$24.99" data-tag="Yarts" data-img="assets/products/jolly-ranchers-madlabs.png" data-mark="J" data-emoji="J" data-flavors="Blue Raspberry, Watermelon, Green Apple, Grape, Cherry, Strawberry, Peach Mango, Pineapple"><img src="assets/products/jolly-ranchers-madlabs.png" alt="Jolly Ranchers"></button></div>
+            <div class="product-body">
+              <div class="product-top">
+                <h4 class="product-name">Jolly Ranchers</h4>
+                <div class="product-price">$24.99</div>
+              </div>
+              <p class="product-desc">MadLabs</p>
+              <div class="product-bottom">
+                <span class="product-tag">Yarts</span>
+                <a class="order-small" href="PUT_ORDER_LINK_HERE">Order</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="product-card">
+            <div class="product-image"><button class="product-image-btn" onclick="showFlavorPopup(this)" data-name="Caramel M&amp;Ms" data-price="$24.99" data-tag="Yarts" data-img="assets/products/caramel-mms-boutiq.png" data-mark="C" data-emoji="C" data-flavors="Wedding Cake, Gelato 41, Banana Runtz, Pineapple Express, Strawberry Cough, OG Kush, Blueberry Haze, Watermelon Zkittlez"><img src="assets/products/caramel-mms-boutiq.png" alt="Caramel M&amp;Ms"></button></div>
+            <div class="product-body">
+              <div class="product-top">
+                <h4 class="product-name">Caramel M&amp;Ms</h4>
+                <div class="product-price">$24.99</div>
+              </div>
+              <p class="product-desc">Boutiq v5</p>
+              <div class="product-bottom">
+                <span class="product-tag">Yarts</span>
+                <a class="order-small" href="PUT_ORDER_LINK_HERE">Order</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-section" id="nicotine">
+        <div class="menu-section-title">
+          <h3>Disposables</h3>
+          <span>Nicotine</span>
+        </div>
+
+        <div class="product-grid">
+
+          <div class="product-card">
+            <div class="product-image"><button class="product-image-btn" onclick="showFlavorPopup(this)" data-name="MikeAndIke" data-price="$24.99" data-tag="Nicotine" data-img="assets/products/mike-and-ike-geek.png" data-mark="M" data-emoji="M" data-flavors="Watermelon Ice, Blue Razz Ice, Strawberry Ice, Mango Ice, Peach Ice, Grape Ice, Lemon Ice, Kiwi Passionfruit Guava"><img src="assets/products/mike-and-ike-geek.png" alt="MikeAndIke"></button></div>
+            <div class="product-body">
+              <div class="product-top">
+                <h4 class="product-name">MikeAndIke</h4>
+                <div class="product-price">$24.99</div>
+              </div>
+              <p class="product-desc">Geek bar</p>
+              <div class="product-bottom">
+                <span class="product-tag">Nicotine</span>
+                <a class="order-small" href="PUT_ORDER_LINK_HERE">Order</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="product-card">
+            <div class="product-image"><button class="product-image-btn" onclick="showFlavorPopup(this)" data-name="Hot Tamales" data-price="$29.99" data-tag="Nicotine" data-img="assets/products/hot-tamales-foger.png" data-mark="H" data-emoji="H" data-flavors="Strawberry Watermelon, Blueberry Lemon, Mango Peach, Pink Lemonade, Watermelon Ice, Grape Ice, Cherry Limeade"><img src="assets/products/hot-tamales-foger.png" alt="Hot Tamales"></button></div>
+            <div class="product-body">
+              <div class="product-top">
+                <h4 class="product-name">Hot Tamales</h4>
+                <div class="product-price">$29.99</div>
+              </div>
+              <p class="product-desc">Foger</p>
+              <div class="product-bottom">
+                <span class="product-tag">Nicotine</span>
+                <a class="order-small" href="PUT_ORDER_LINK_HERE">Order</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="product-card">
+            <div class="product-image"><button class="product-image-btn" onclick="showFlavorPopup(this)" data-name="Milk Duds" data-price="$19.99" data-tag="Nicotine" data-img="assets/products/milk-duds-lost-mary.png" data-mark="D" data-emoji="D" data-flavors="Blueberry Ice, Strawberry Ice, Watermelon Ice, Mango Ice, Peach Ice, Grape Ice, Lychee Ice, Passion Fruit Ice"><img src="assets/products/milk-duds-lost-mary.png" alt="Milk Duds"></button></div>
+            <div class="product-body">
+              <div class="product-top">
+                <h4 class="product-name">Milk Duds</h4>
+                <div class="product-price">$19.99</div>
+              </div>
+              <p class="product-desc">Lost Mary</p>
+              <div class="product-bottom">
+                <span class="product-tag">Nicotine</span>
+                <a class="order-small" href="PUT_ORDER_LINK_HERE">Order</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-section" id="flower-rosin">
+        <div class="menu-section-title">
+          <h3>Flower/Rosin</h3>
+          <span>thc</span>
+        </div>
+
+        <div class="product-grid">
+
+          <div class="product-card">
+            <div class="product-image"><button class="product-image-btn" onclick="showFlavorPopup(this)" data-name="Whoppers" data-price="$29.99" data-tag="Flower/Rosin" data-img="" data-mark="W" data-emoji="W" data-flavors="OG Kush, Gorilla Glue, Blue Dream, Purple Haze, Sour Diesel, Wedding Cake, Gelato, Runtz"><div class="product-emoji">W</div></button></div>
+            <div class="product-body">
+              <div class="product-top">
+                <h4 class="product-name">Whoppers</h4>
+                <div class="product-price">$29.99</div>
+              </div>
+              <p class="product-desc">Big Buds - 3.5g</p>
+              <div class="product-bottom">
+                <span class="product-tag">Flower/Rosin</span>
+                <a class="order-small" href="PUT_ORDER_LINK_HERE">Order</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="product-card">
+            <div class="product-image"><button class="product-image-btn" onclick="showFlavorPopup(this)" data-name="Swedish Fish" data-price="$29.99" data-tag="Flower/Rosin" data-img="" data-mark="S" data-emoji="S" data-flavors="Strawberry, Tropical, Berry Blast, Lemon, Watermelon, Peach, Grape, Cherry"><div class="product-emoji">S</div></button></div>
+            <div class="product-body">
+              <div class="product-top">
+                <h4 class="product-name">Swedish Fish</h4>
+                <div class="product-price">$29.99</div>
+              </div>
+              <p class="product-desc">live-rosin-tier-3</p>
+              <div class="product-bottom">
+                <span class="product-tag">Flower/Rosin</span>
+                <a class="order-small" href="PUT_ORDER_LINK_HERE">Order</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-section" id="eddies">
+        <div class="menu-section-title">
+          <h3>Eddies</h3>
+          <span>thc</span>
+        </div>
+
+        <div class="product-grid">
+
+          <div class="product-card">
+            <div class="product-image"><button class="product-image-btn" onclick="showFlavorPopup(this)" data-name="Trolli Peach-Ring Gummies" data-price="$29.99" data-tag="Eddies" data-img="assets/products/trolli-peach-rings.png" data-mark="T" data-emoji="T" data-flavors="Watermelon, Strawberry, Peach, Tropical Punch, Sour Apple, Blue Raspberry, Grape, Cherry"><img src="assets/products/trolli-peach-rings.png" alt="Trolli Peach-Ring Gummies"></button></div>
+            <div class="product-body">
+              <div class="product-top">
+                <h4 class="product-name">Trolli Peach-Ring Gummies</h4>
+                <div class="product-price">$29.99</div>
+              </div>
+              <p class="product-desc">Edibles (10 calories x 10 gummies)</p>
+              <div class="product-bottom">
+                <span class="product-tag">Eddies</span>
+                <a class="order-small" href="PUT_ORDER_LINK_HERE">Order</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+  </section>
+  <section class="faq" id="faq">
+    <div class="faq-inner">
+      <div class="faq-head">
+        <div>
+          <p class="section-kicker">Need To Know</p>
+          <h2 class="faq-title">FAQ</h2>
+        </div>
+        <p class="faq-note">Quick answers without sending people to a separate page.</p>
+      </div>
+      <div class="faq-list" id="faq-list">
+
+        <details class="faq-item">
+          <summary>How do I order?</summary>
+          <div class="faq-answer">Add your items to the cart, review the order details, then use checkout to open the saved payment or support link.</div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Can I choose packaging?</summary>
+          <div class="faq-answer">Yes. When packaging options are enabled in admin, the cart lets you pick one and the preview changes with your choice.</div>
+        </details>
+
+        <details class="faq-item">
+          <summary>How does shipping work?</summary>
+          <div class="faq-answer">Shipping options only appear when you add them in admin. Leaving shipping blank removes the shipping area from the cart.</div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Who can order?</summary>
+          <div class="faq-answer">Customers should follow all local rules and age requirements before placing any order.</div>
+        </details>
+      </div>
+    </div>
+  </section><footer class="footer">© 2026 Lavish. All rights reserved.</footer>
+</div>
+<script>
+const canvas = document.getElementById("stars");
+const ctx = canvas.getContext("2d");
+let w, h, dpr;
+let stars = [];
+let mouse = { x: -9999, y: -9999, active: false };
+let scrollYPos = 0;
+function resize() {
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+  w = window.innerWidth;
+  h = window.innerHeight;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.width = w + "px";
+  canvas.style.height = h + "px";
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  createStars();
+}
+function randomWeightedRadius() {
+  const roll = Math.random();
+  if (roll < 0.88) return 0.20 + Math.random() * 0.34;
+  if (roll < 0.988) return 0.48 + Math.random() * 0.42;
+  return 0.92 + Math.random() * 0.34;
+}
+function createStars() {
+  const count = Math.floor(Math.min(760, Math.max(460, (w * h) / 2300)));
+  stars = Array.from({ length: count }, (_, i) => {
+    const depth = Math.random();
+    const radius = randomWeightedRadius();
+    const brightClass = radius > 0.88;
+    const cols = Math.ceil(Math.sqrt(count * (w / h)));
+    const rows = Math.ceil(count / cols);
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    const cellW = w / cols;
+    const cellH = h / rows;
+    return {
+      x: col * cellW + Math.random() * cellW,
+      y: row * cellH + Math.random() * cellH,
+      ox: 0, oy: 0,
+      r: radius,
+      baseAlpha: brightClass ? 0.12 + Math.random() * 0.11 : 0.018 + Math.random() * 0.105,
+      twinkle: Math.random() * Math.PI * 2,
+      speed: 0.00035 + Math.random() * 0.00115,
+      driftX: (Math.random() - 0.5) * (0.0028 + depth * 0.007),
+      driftY: (Math.random() - 0.5) * (0.0024 + depth * 0.006),
+      depth,
+      seed: Math.random() * 1000
+    };
+  });
+}
+window.addEventListener("mousemove", e => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; });
+window.addEventListener("mouseleave", () => { mouse.active = false; });
+window.addEventListener("scroll", () => { scrollYPos = window.scrollY || 0; }, { passive: true });
+window.addEventListener("resize", resize);
+function drawStar(s, t) {
+  const parallax = scrollYPos * (0.008 + s.depth * 0.030);
+  const baseX = s.x;
+  const baseY = ((s.y + parallax) % (h + 22)) - 11;
+  const dx = baseX - mouse.x;
+  const dy = baseY - mouse.y;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  const radius = 155;
+  let pushX = 0, pushY = 0, brighten = 0;
+  if (mouse.active && dist < radius) {
+    const force = Math.pow(1 - dist / radius, 1.95);
+    const angle = Math.atan2(dy, dx);
+    pushX = Math.cos(angle) * force * 12 * (0.55 + s.depth);
+    pushY = Math.sin(angle) * force * 12 * (0.55 + s.depth);
+    brighten = force * 0.42;
+  }
+  s.ox += (pushX - s.ox) * 0.055;
+  s.oy += (pushY - s.oy) * 0.055;
+  s.x += s.driftX;
+  s.y += s.driftY;
+  if (s.x < -12) s.x = w + 12;
+  if (s.x > w + 12) s.x = -12;
+  if (s.y < -18) s.y = h + 18;
+  if (s.y > h + 18) s.y = -18;
+  s.twinkle += s.speed * 16;
+  const flicker = (Math.sin(s.twinkle + t * 0.001 + s.seed) + 1) * 0.014;
+  const alpha = Math.min(0.62, s.baseAlpha + flicker + brighten);
+  const x = baseX + s.ox;
+  const y = baseY + s.oy;
+  const r = s.r + brighten * 0.45;
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+  ctx.fill();
+  if (brighten > 0.30 && s.r > 0.55) {
+    const glowSize = 4 + brighten * 7;
+    const glow = ctx.createRadialGradient(x, y, 0, x, y, glowSize);
+    glow.addColorStop(0, `rgba(255,255,255,${0.045 * brighten})`);
+    glow.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(x, y, glowSize, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  return { x, y, dist, alpha, r };
+}
+function connectNearby(points) {
+  if (!mouse.active) return;
+  const near = points.filter(p => p.dist < 128 && p.alpha > 0.12).sort((a, b) => a.dist - b.dist).slice(0, 5);
+  for (let i = 0; i < near.length; i++) {
+    for (let j = i + 1; j < near.length; j++) {
+      const a = near[i], b = near[j];
+      const dx = a.x - b.x, dy = a.y - b.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 70) {
+        const mouseFade = 1 - ((a.dist + b.dist) / 2) / 128;
+        const alpha = Math.max(0, (1 - dist / 70) * mouseFade * 0.038);
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+  }
+}
+function animate(t) {
+  ctx.clearRect(0, 0, w, h);
+  const points = stars.map(s => drawStar(s, t));
+  connectNearby(points);
+  requestAnimationFrame(animate);
+}
+resize();
+requestAnimationFrame(animate);
+</script>
+<script>
+(function syncAdminProducts() {
+  const saved = localStorage.getItem("lavish_admin_v2");
+  if (!saved) return;
+  let adminState;
+  try { adminState = JSON.parse(saved); } catch (e) { return; }
+  if (!adminState || !Array.isArray(adminState.products)) return;
+  const menuWrap = document.querySelector(".menu-wrap");
+  if (!menuWrap) return;
+  const orderLink = adminState.settings?.orderLink || "PUT_ORDER_LINK_HERE";
+  document.title = adminState.settings?.name || document.title;
+  document.querySelectorAll('a[href="PUT_ORDER_LINK_HERE"], .nav-order, .order-small').forEach(link => {
+    link.setAttribute("href", orderLink);
+  });
+  const logo = document.querySelector(".logo");
+  if (logo && adminState.settings?.name) logo.textContent = adminState.settings.name;
+  const heroTitle = document.querySelector(".hero-title");
+  if (heroTitle && adminState.hero?.title) heroTitle.textContent = adminState.hero.title;
+  const heroSub = document.querySelector(".hero-sub");
+  if (heroSub && adminState.hero?.sub) heroSub.textContent = adminState.hero.sub;
+  const heroNote = document.querySelector(".hero-note");
+  if (heroNote && adminState.hero?.note) heroNote.textContent = adminState.hero.note;
+  const heroButtons = document.querySelectorAll(".hero-btn");
+  if (heroButtons[0] && adminState.hero?.btn1) heroButtons[0].innerHTML = `<span>☰</span>${clean(adminState.hero.btn1)}`;
+  if (heroButtons[1] && adminState.hero?.btn2) {
+    heroButtons[1].innerHTML = `<span>✈</span>${clean(adminState.hero.btn2)}`;
+    heroButtons[1].setAttribute("href", orderLink);
+  }
+  const footer = document.querySelector(".footer");
+  if (footer && adminState.settings?.footer) footer.textContent = adminState.settings.footer;
+  const defaultSections = [
+    { id: "disposables-thc", title: "Disposables-THC", sub: "Sweet drops", aliases: ["disposables-thc", "gummies", "gummy"] },
+    { id: "disposables-nic", title: "Disposables-NIC", sub: "Rich picks", aliases: ["disposables-nic", "chocolate"] },
+    { id: "edibles-thc", title: "Edibles-THC", sub: "Sharp flavors", aliases: ["edibles-thc", "sour"] },
+    { id: "other", title: "Other", sub: "Special items", aliases: ["other"] }
+  ];
+  function slugify(value, fallback = "section") {
+    const slug = String(value || "")
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    return slug || fallback;
+  }
+  function normalizeCategory(cat) {
+    const value = String(cat || "").toLowerCase();
+    if (value === "gummies" || value === "gummy") return "disposables-thc";
+    if (value === "chocolate") return "disposables-nic";
+    if (value === "sour") return "edibles-thc";
+    return value || "other";
+  }
+  function normalizeSection(section, index = 0) {
+    const title = String(section?.title || `Section ${index + 1}`).trim();
+    const id = slugify(section?.id || title, `section-${index + 1}`);
+    const aliases = Array.isArray(section?.aliases)
+      ? section.aliases
+      : String(section?.aliases || "").split(",");
+    return {
+      id,
+      title,
+      sub: String(section?.sub || "").trim(),
+      aliases: [...new Set([id, ...aliases].map(alias => slugify(alias)).filter(Boolean))]
+    };
+  }
+  const sectionMeta = Array.isArray(adminState.menuSections) && adminState.menuSections.length
+    ? adminState.menuSections.map(normalizeSection)
+    : defaultSections;
+  function clean(value) {
+    return String(value || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+  function productCard(product) {
+    const image = product.image
+      ? `<img src="${clean(product.image)}" alt="${clean(product.name)}">`
+      : `<div class="product-emoji">${clean(product.mark || product.name?.charAt(0) || "L")}</div>`;
+    return `
+      <div class="product-card">
+        <div class="product-image">${image}</div>
+        <div class="product-body">
+          <div class="product-top">
+            <h4 class="product-name">${clean(product.name)}</h4>
+            <div class="product-price">${clean(product.price)}</div>
+          </div>
+          <p class="product-desc">${clean(product.desc)}</p>
+          <div class="product-bottom">
+            <span class="product-tag">${clean(product.tag || product.cat)}</span>
+            <a class="order-small" href="${clean(orderLink)}">Order</a>
+          </div>
+        </div>
+      </div>`;
+  }
+  function productBelongsToSection(product, section) {
+    return section.aliases.includes(normalizeCategory(product.cat));
+  }
+
+  const categoryNav = document.querySelector(".category-nav");
+  if (categoryNav) {
+    categoryNav.innerHTML = sectionMeta
+      .map(section => `<a href="#${clean(section.id)}">${clean(section.title)}</a>`)
+      .join("");
+  }
+
+  menuWrap.innerHTML = sectionMeta.map(section => {
+    const products = adminState.products.filter(product => productBelongsToSection(product, section));
+    if (!products.length) return "";
+    return `
+      <div class="menu-section" id="${clean(section.id)}">
+        <div class="menu-section-title">
+          <h3>${clean(section.title)}</h3>
+          <span>${clean(section.sub)}</span>
+        </div>
+        <div class="product-grid">
+          ${products.map(productCard).join("\n")}
+        </div>
+      </div>`;
+  }).join("");
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="backend-config.js?v=2"></script>
+<script src="assets/lavish-backend.js"></script>
+</body></html>
